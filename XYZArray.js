@@ -22,7 +22,7 @@ export default class XYZArray {
         break;
       }
     }
-    console.log(`after scan numX:${numX} numY:${numY}`);
+    //console.log(`after scan numX:${numX} numY:${numY}`);
     if (true) {
       return [numX, numY];
     }
@@ -87,7 +87,7 @@ export default class XYZArray {
       const y = src[yi];
       const z = src[zi];
       if (y != y0) {
-        console.log('found new y at yCount:' + yCount);
+        //console.log('found new y at yCount:' + yCount);
         yCount = 0;
         y0 = y;
       }

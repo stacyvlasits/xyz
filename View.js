@@ -12,12 +12,13 @@ const zoomBoxOpacity = 0.3;
  * binding DOM elt '#view'.
  */
 export default class View extends THREE.Scene {
-  constructor(container = document.querySelector('#view')) {
+  constructor(container = document.querySelector('#view'), animCb = null) {
     super();
     if (!container) {
       throw new Error('View container not found');
     }
     this.container = container;
+    this.animCb = animCb;
     this.width = container.innerWidth;
     this.height = container.innerHeight;
     this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 1e4);
@@ -132,6 +133,9 @@ export default class View extends THREE.Scene {
   animate() {
     this.controls.update();
     this.renderer.render(this, this.camera);
+    if (this.animCb) {
+      this.animCb(this);
+    }
     requestAnimationFrame(() => {
         this.animate();
       });
