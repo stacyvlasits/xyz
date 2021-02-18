@@ -4,14 +4,18 @@ import XYZArray from './XYZArray.js';
 
 /** Scene object to view XYZ file. */
 export default class XYZObject extends THREE.Object3D {
-  constructor(geometry) {
+  constructor(geometry, usePoints = true) {
     super();
     this.origArr = [...geometry.attributes.position.array];
     this.srcArr = new XYZArray(this.origArr);
     const sourceBounds = new THREE.Box3;
     geometry.computeBoundingBox();
     sourceBounds.copy(geometry.boundingBox);
-    this.shape = toPointsShape(this.srcArr.sourceArray, sourceBounds);
+    if (usePoints) {
+      this.shape = toPointsShape(this.srcArr.sourceArray, sourceBounds);
+    } else {
+      this.shape = toShape(this.srcArr, sourceBounds);
+    }
     this.add(this.shape);
   }
 
