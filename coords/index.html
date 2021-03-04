@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <body>
+  <head>
+    <title>Coordinate Conversion, WGS84 to LV95</title>
+    <link rel="stylesheet" href="../index.css"/>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  </head>
+  <body class="diurnal-bright">
+    <h1>Coordinate Conversion, WGS84 to LV95</h1>
+    <div id="control-panel">
+    <h2>Input</h2>
+    <select name="input_format">
+      <option value="deg">Deg°</option>
+      <option value="dms">Deg°/Min'/Sec"</option>
+    </select>
     <form name="coords_degrees">
       <table>
         <tr>
@@ -18,25 +30,27 @@
       </table>
       <button type="submit">Submit</button>
     </form>
-    <form name="coords_dms">
+    <form name="coords_dms" style="display: none">
       <table>
         <tr>
           <td>Latitude:</td>
           <td>
             <input type="number" name="latDeg" value="46">°
-            <input type="number" name="latMin" value="02">'
-            <input type="number" name="latSec" value="38.87" step="any">"
+            <input type="number" name="latMin" value="57">'
+            <input type="number" name="latSec" value="3.89798" step="any">"
           </td>
         </tr>
         <tr>
           <td>Longitude:</td>
           <td>
-            <input type="number" name="lngDeg" value="8">°
-            <input type="number" name="lngMin" value="43">'
-            <input type="number" name="lngSec" value="49.79" step="any">"
+            <input type="number" name="lngDeg" value="7">°
+            <input type="number" name="lngMin" value="26">'
+            <input type="number" name="lngSec" value="19.07672" step="any">"
           </td>
         </tr>
       </table>
       <button type="submit">Submit</button>
     </form>
+    <h2>Output</h2>
+    <div id="output"></div>
     <script type="module" src="index.js"></script>

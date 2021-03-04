@@ -38,8 +38,8 @@ tests.add('dms2deg', () => {
 tests.add('wgs2lv95', () => {
     const latDeg = dms2deg(46, 2, 38.87), lngDeg = dms2deg(8, 43, 49.79);
     const [N, E] = wgs2lv95(latDeg, lngDeg);
-    tests.assertEquals(1099999.97, N);
-    tests.assertEquals(2699999.76, E);
+    tests.assertEquals(1099999.95, N);
+    tests.assertEquals(2699999.78, E);
   });
 
 

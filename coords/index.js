@@ -10,14 +10,35 @@ function $(id) {
 }
 
 
+function selectInput(value, degreesForm, dmsForm) {
+  switch(value) {
+  case 'dms':
+    degreesForm.style.display = 'none';
+    dmsForm.style.display = 'block';
+    break;
+  case 'deg':
+    degreesForm.style.display = 'block';
+    dmsForm.style.display = 'none';
+  }
+}
+
+
+function showOutput(N, E) {
+  const outputElt = document.querySelector('#output');
+  outputElt.innerText = `${N} N ${E} E`;
+}
+
+
 function init() {
+
 
   const degreesForm = document.forms.coords_degrees;
   degreesForm.addEventListener('submit', event => {
     try {
       const lat = parseFloat(degreesForm.latDeg.value);
       const lng = parseFloat(degreesForm.lngDeg.value);
-      const [x, y] = wgs2lv95(lat, lng);
+      const [N, E] = wgs2lv95(lat, lng);
+      showOutput(N, E);
     } catch (e) {
       console.error(e);
     }
@@ -35,12 +56,20 @@ function init() {
       const lng = dms2deg(parseFloat(dmsForm.lngDeg.value),
                           parseFloat(dmsForm.lngMin.value),
                           parseFloat(dmsForm.lngSec.value));
-      const [x, y] = wgs2lv95(lat, lng);
+      const [N, E] = wgs2lv95(lat, lng);
+      showOutput(N, E);
     } catch (e) {
       console.error(e);
     }
     event.preventDefault();
   });
+
+  const inputSelector = document.querySelector('select[name=input_format]');
+  inputSelector.addEventListener('change', () => {
+      selectInput(inputSelector.value, degreesForm, dmsForm);
+    });
+
+  degreesForm.dispatchEvent(new Event('submit'));
 }
 
 init();

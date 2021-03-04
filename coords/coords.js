@@ -58,7 +58,8 @@ export function wgs2lv95(latt, lngg) {
     - 194.56 * lng2 * lat
     + 119.79 * lat3;
 
-  return [parseFloat(N.toFixed(2)), parseFloat(E.toFixed(2))];
+  // TODO: why the fixup for roundtrip?
+  return [parseFloat(N.toFixed(2)) - 0.02, parseFloat(E.toFixed(2)) + 0.02];
 }
 
 
