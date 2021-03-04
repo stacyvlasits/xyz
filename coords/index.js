@@ -1,6 +1,7 @@
 import {
   deg2rad,
-  ellipsoidToLV95
+  dms2deg,
+  wgs2lv95
 } from './coords.js';
 
 
@@ -10,18 +11,34 @@ function $(id) {
 
 
 function init() {
-  const form = document.forms.coords;
-  form.addEventListener('submit', event => {
-    const lat = deg2rad(
-        parseFloat(form.latDeg.value),
-        parseFloat(form.latMin.value),
-        parseFloat(form.latSec.value));
-    const lng = deg2rad(
-        parseFloat(form.lngDeg.value),
-        parseFloat(form.lngMin.value),
-        parseFloat(form.lngSec.value));
-    const xy = ellipsoidToLV95(lat, lng);
-    console.log(lat, lng, xy);
+
+  const degreesForm = document.forms.coords_degrees;
+  degreesForm.addEventListener('submit', event => {
+    try {
+      const lat = parseFloat(degreesForm.latDeg.value);
+      const lng = parseFloat(degreesForm.lngDeg.value);
+      const [x, y] = wgs2lv95(lat, lng);
+    } catch (e) {
+      console.error(e);
+    }
+    event.preventDefault();
+  });
+
+
+  // DMS: Degrees, minutes, seconds
+  const dmsForm = document.forms.coords_dms;
+  dmsForm.addEventListener('submit', event => {
+    try {
+      const lat = dms2deg(parseFloat(dmsForm.latDeg.value),
+                          parseFloat(dmsForm.latMin.value),
+                          parseFloat(dmsForm.latSec.value));
+      const lng = dms2deg(parseFloat(dmsForm.lngDeg.value),
+                          parseFloat(dmsForm.lngMin.value),
+                          parseFloat(dmsForm.lngSec.value));
+      const [x, y] = wgs2lv95(lat, lng);
+    } catch (e) {
+      console.error(e);
+    }
     event.preventDefault();
   });
 }

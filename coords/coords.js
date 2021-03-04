@@ -90,6 +90,26 @@ export function lv952wgs(N, E) {
 }
 
 
+// https://www.movable-type.co.uk/scripts/latlong.html
+// MIT License
+// NB: https://www.movable-type.co.uk/scripts/latlong-vincenty.html
+export function distanceHaversine(lat1, lon1, lat2, lon2) {
+  // TODO: replace with computed value from reference ellipsoid.
+  const R = 6371e3; // metres
+  const toRad = π / 180;
+  const φ1 = lat1 * toRad; // φ, λ in radians
+  const φ2 = lat2 * toRad;
+  const Δφ = (lat2 - lat1) * toRad;
+  const Δλ = (lon2 - lon1) * toRad;
+  const a = sin(Δφ / 2) * sin(Δφ / 2) +
+    cos(φ1) * cos(φ2) *
+    sin(Δλ / 2) * sin(Δλ / 2);
+  const c = 2 * Math.atan2(sqrt(a), sqrt(1 - a));
+  const d = R * c; // in metres
+  return d;
+}
+
+
 export class Ellipsoid {
   /**
    * @param φ0 ellipsoidal latitude of the projection centre

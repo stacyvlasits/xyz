@@ -1,12 +1,13 @@
 import Testing from '../lib/testing.js/testing.js';
 import {
-  dms2deg,
   deg2rad,
   deg2sec,
+  distanceHaversine,
+  dms2deg,
+  ellipsoidToLV95,
   lv952wgs,
   wgs2lv95,
   BernBesselEllipsoid,
-  ellipsoidToLV95,
   LV95ToEllipsoid
 } from './coords.js';
 
@@ -68,6 +69,17 @@ tests.add('deg2sec', () => {
     tests.assertEquals(169023.8979828, latSec);
     tests.assertEquals(26779.0767156, lngSec);
   });
+
+
+tests.add('distanceHaversine', () => {
+    // These are the round-trip coords, starting with WGS for Bern
+    // observatory (2600000, 1200000) in LVS95.  The second is the
+    // result of my wgs2lv95 -> lv952wgs.  So, about 20cm error.
+    const lat1 = 46.951082773, lon1 = 7.438632421;
+    const lat2 = 46.951082953, lon2 = 7.438632158;
+    const d = distanceHaversine(lat1, lon1, lat2, lon2);
+    tests.assertEquals(0.028268654470189586, d);
+  })
 
 
 // From 3.1 Notation, constants, auxiliary values

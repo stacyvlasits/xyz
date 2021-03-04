@@ -1,7 +1,24 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <form name="coords">
+    <form name="coords_degrees">
+      <table>
+        <tr>
+          <td>Latitude:</td>
+          <td>
+            <input type="number" name="latDeg" value="46.951082773" step="any">°
+          </td>
+        </tr>
+        <tr>
+          <td>Longitude:</td>
+          <td>
+            <input type="number" name="lngDeg" value="7.438632421" step="any">°
+          </td>
+        </tr>
+      </table>
+      <button type="submit">Submit</button>
+    </form>
+    <form name="coords_dms">
       <table>
         <tr>
           <td>Latitude:</td>
