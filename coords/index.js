@@ -32,8 +32,11 @@ window.initMap = () => {
 
 
 function centerMap(lat, lon) {
-  marker.setPosition(new google.maps.LatLng(lat, lon));
-  map.panTo(new google.maps.LatLng(lat, lon));
+  // Avoid race at startup
+  if (marker && map) {
+    marker.setPosition(new google.maps.LatLng(lat, lon));
+    map.panTo(new google.maps.LatLng(lat, lon));
+  }
 }
 
 
