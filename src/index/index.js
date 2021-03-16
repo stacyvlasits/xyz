@@ -1,5 +1,5 @@
-import * as Diurnal from './lib/diurnal.js/diurnal.js';
-import {XYZLoader} from './lib/three.js/XYZLoader.js';
+import * as Diurnal from '../lib/diurnal.js/diurnal.js';
+import {XYZLoader} from '../lib/three.js/XYZLoader.js';
 
 import FileLoaderControl from './FileLoaderControl.js';
 import SelectionControl from './SelectionControl.js';
@@ -37,3 +37,5 @@ function handleHash() {
 window.addEventListener('hashchange', handleHash);
 handleHash();
 
+export function init() {
+}

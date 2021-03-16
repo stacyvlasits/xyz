@@ -10,7 +10,6 @@
     <div id="pad">
       <div id="map" style="width: 50%; height: 50%; min-width: 640px; min-height: 480px"></div>
     </div>
-    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     <div id="control-panel">
     <p><a href="https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84" target=new>WGS84</a>
     is the geocentric coordinate system used
@@ -31,54 +30,12 @@
       <p>This tool is still in development and has only been tested
       with a few conversions.  For authoritative references,
       use <a href="https://www.swisstopo.admin.ch/en/maps-data-online/calculation-services/navref.html"
-      target=new>NAVREF</a>, maintained by the Topography Office.
-    <h2>WGS84 Input</h2>
-    <select name="input_format">
-      <option value="deg">Deg°</option>
-      <option value="dms">Deg°/Min'/Sec"</option>
-    </select>
-    <form name="coords_degrees">
-      <table>
-        <tr>
-          <td>Latitude:</td>
-          <td>
-            <input type="number" name="latDeg" value="46.951082773" step="any">° N
-          </td>
-        </tr>
-        <tr>
-          <td>Longitude:</td>
-          <td>
-            <input type="number" name="lngDeg" value="7.438632421" step="any">° E
-          </td>
-        </tr>
-      </table>
-      <button type="submit">Submit</button>
-    </form>
-    <form name="coords_dms" style="display: none">
-      <table>
-        <tr>
-          <td>Latitude:</td>
-          <td>
-            <input type="number" name="latDeg" value="46">°
-            <input type="number" name="latMin" value="57">'
-            <input type="number" name="latSec" value="3.89798" step="any">"
-          </td>
-        </tr>
-        <tr>
-          <td>Longitude:</td>
-          <td>
-            <input type="number" name="lngDeg" value="7">°
-            <input type="number" name="lngMin" value="26">'
-            <input type="number" name="lngSec" value="19.07672" step="any">"
-          </td>
-        </tr>
-      </table>
-      <button type="submit">Submit</button>
-    </form>
+             target=new>NAVREF</a>, maintained by the Topography Office.
+  <div id="app">
     <h2>LV95 Output</h2>
-    <div id="output"></div>
-    <script type="module" src="index.js"></script>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC23zX_LsVxJr9ZBqlpVcBZEDTVFJTFzZA&callback=window.initMap&libraries=&v=weekly"
-      defer
-    ></script>
+    <div>{{lv95N}} N {{lv95E}} E</div>
+    <coords-form></coords-form>
+  </div>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC23zX_LsVxJr9ZBqlpVcBZEDTVFJTFzZA&callback=window.initMap&libraries=&v=weekly"
+    defer></script>

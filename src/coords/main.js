@@ -1,4 +1,6 @@
-import * as Diurnal from '../lib/diurnal.js/diurnal.js';
+import * as Diurnal from '../../lib/diurnal.js/diurnal.js';
+import Vue from 'vue';
+import CoordsForm from './CoordsForm.vue';
 import {
   deg2rad,
   dms2deg,
@@ -7,7 +9,15 @@ import {
 
 
 Diurnal.bind();
+// TODO: make this an arg to bind
 document.querySelector('#diurnal-controls').style.visibility = 'hidden';
+
+
+const vm = new Vue({
+  el: '#app',
+  render: h => h(CoordsForm)
+});
+vm.$on('coord-changed', event => { centerMap(event.wgs[0], event.wgs[1]) });
 
 
 function $(id) {
@@ -41,34 +51,18 @@ function centerMap(lat, lon) {
 
 
 
-function selectInput(value, degreesForm, dmsForm) {
-  switch(value) {
-  case 'dms':
-    degreesForm.style.display = 'none';
-    dmsForm.style.display = 'block';
-    break;
-  case 'deg':
-    degreesForm.style.display = 'block';
-    dmsForm.style.display = 'none';
-  }
-}
-
-
 function showOutput(lat, lon, N, E) {
-  const outputElt = document.querySelector('#output');
-  outputElt.innerText = `${N} N ${E} E`;
+  app.lv95N = N;
+  app.lv95E = E;
   centerMap(lat, lon);
 }
 
 
-function init() {
-
-
-  const degreesForm = document.forms.coords_degrees;
-  degreesForm.addEventListener('submit', event => {
+function initDegForm(degForm) {
+  degForm.addEventListener('submit', event => {
     try {
-      const lat = parseFloat(degreesForm.latDeg.value);
-      const lon = parseFloat(degreesForm.lngDeg.value);
+      const lat = parseFloat(degForm.latDeg.value);
+      const lon = parseFloat(degForm.lngDeg.value);
       const [N, E] = wgs2lv95(lat, lon);
       showOutput(lat, lon, N, E);
     } catch (e) {
@@ -76,10 +70,11 @@ function init() {
     }
     event.preventDefault();
   });
+}
 
 
-  // DMS: Degrees, minutes, seconds
-  const dmsForm = document.forms.coords_dms;
+// Dms: Degrees, minutes, seconds
+function initDmsForm(dmsForm) {
   dmsForm.addEventListener('submit', event => {
     try {
       const lat = dms2deg(parseFloat(dmsForm.latDeg.value),
@@ -95,14 +90,15 @@ function init() {
     }
     event.preventDefault();
   });
-
-  const inputSelector = document.querySelector('select[name=input_format]');
-  inputSelector.addEventListener('change', () => {
-      selectInput(inputSelector.value, degreesForm, dmsForm);
-    });
-
-  degreesForm.dispatchEvent(new Event('submit'));
 }
 
 
-init();
+function init() {
+  const degForm = document.forms.coords_degrees;
+  initDegForm(degForm);
+  initDmsForm(document.forms.coords_dms);
+  degForm.dispatchEvent(new Event('submit'));
+}
+
+
+//init();

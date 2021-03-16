@@ -1,3 +1,21 @@
 {
-  "type": "module"
+  "name": "XYZ-Tool",
+  "version": "1.0.0",
+  "description": "XYZ extractor.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:coord": "vue-cli-service build --mode=development src/coords/main.js"
+  },
+  "keywords": [],
+  "author": "Pablo Mayrgundter",
+  "dependencies": {
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^4.5.12",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "postcss": {}
 }
