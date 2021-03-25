@@ -1,4 +1,4 @@
-import * as Diurnal from '../../lib/diurnal.js/diurnal.js';
+import * as Diurnal from '../lib/diurnal.js/diurnal.js';
 import Vue from 'vue';
 import CoordsForm from './CoordsForm.vue';
 import {
