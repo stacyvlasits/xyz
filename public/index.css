@@ -1,5 +1,5 @@
-@import './lib/diurnal.js/diurnal.css';
-@import './lib/fullscreen.js/fullscreen.css';
+@import '../node_modules/@pablo-mayrgundter/diurnal.js/diurnal.css';
+@import '../node_modules/@pablo-mayrgundter/fullscreen.js/fullscreen.css';
 @import './normalize.css';
 
 

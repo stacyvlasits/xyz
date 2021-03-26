@@ -1,7 +1,7 @@
-import * as THREE from '../lib/three.js/three.module.js';
-import {MapControls} from '../lib/three.js/OrbitControls.js';
+import * as THREE from '../lib/three/build/three.module.js';
+import {MapControls} from '../lib/three/examples/jsm/controls/OrbitControls.js';
 
-import Fullscreen from '../lib/fullscreen.js/fullscreen.js';
+import Fullscreen from '../lib/@pablo-mayrgundter/fullscreen.js/fullscreen.js';
 import XYZObject from './XYZObject.js';
 
 

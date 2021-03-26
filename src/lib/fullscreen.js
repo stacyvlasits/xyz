@@ -1,1 +1,0 @@
-/Users/pablo/buildrs/xyz/lib/fullscreen.js

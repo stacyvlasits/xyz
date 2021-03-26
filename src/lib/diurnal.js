@@ -1,1 +1,0 @@
-/Users/pablo/buildrs/xyz/lib/diurnal.js

@@ -1,5 +1,5 @@
-import * as Diurnal from '../lib/diurnal.js/diurnal.js';
-import {XYZLoader} from '../lib/three.js/XYZLoader.js';
+import * as Diurnal from '@pablo-mayrgundter/diurnal.js';
+import {XYZLoader} from '../lib/three/examples/jsm/loaders/XYZLoader.js';
 
 import FileLoaderControl from './FileLoaderControl.js';
 import SelectionControl from './SelectionControl.js';

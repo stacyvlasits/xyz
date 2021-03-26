@@ -1,9 +1,0 @@
-[submodule "lib/diurnal.js"]
-	path = lib/diurnal.js
-	url = https://github.com/pablo-mayrgundter/diurnal.js.git
-[submodule "lib/fullscreen.js"]
-	path = lib/fullscreen.js
-	url = https://github.com/pablo-mayrgundter/fullscreen.js.git
-[submodule "lib/testing.js"]
-	path = lib/testing.js
-	url = https://github.com/pablo-mayrgundter/testing.js.git
