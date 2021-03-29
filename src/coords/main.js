@@ -7,6 +7,8 @@ import {
   wgs2lv95
 } from './coords.js';
 
+// TODO(https://github.com/buildrs/xyz/issues/1): CSS loading is weird.
+import css from '../../public/index.css';
 
 Diurnal.bind();
 // TODO: make this an arg to bind

@@ -6,8 +6,13 @@ import SelectionControl from './SelectionControl.js';
 import View from './View.js';
 import XYZObject from './XYZObject.js';
 
+// TODO(https://github.com/buildrs/xyz/issues/1): CSS loading is weird.
+import css from '../../public/index.css';
+
 
 Diurnal.bind();
+
+//console.log('CSS: ', css);
 
 const view = new View();
 

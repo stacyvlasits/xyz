@@ -1,5 +1,9 @@
-@import '../node_modules/@pablo-mayrgundter/diurnal.js/diurnal.css';
-@import '../node_modules/@pablo-mayrgundter/fullscreen.js/fullscreen.css';
+/**
+ * TODO(https://github.com/buildrs/xyz/issues/1): CSS loading is
+ * weird.
+ */
+@import '~@pablo-mayrgundter/diurnal.js/diurnal.css';
+@import '~@pablo-mayrgundter/fullscreen.js/fullscreen.css';
 @import './normalize.css';
 
 
