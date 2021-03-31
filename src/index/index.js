@@ -1,46 +1,10 @@
-import * as Diurnal from '@pablo-mayrgundter/diurnal.js';
-import {XYZLoader} from '../lib/three/examples/jsm/loaders/XYZLoader.js';
+import Vue from 'vue';
+import App from './App.vue';
+import * as Index from './index.js';
 
-import FileLoaderControl from './FileLoaderControl.js';
-import SelectionControl from './SelectionControl.js';
-import View from './View.js';
-import XYZObject from './XYZObject.js';
+new Vue({
+  el: '#app',
+  render: h => h(App)
+});
 
-// TODO(https://github.com/buildrs/xyz/issues/1): CSS loading is weird.
-import css from '../../public/index.css';
-
-
-Diurnal.bind();
-
-//console.log('CSS: ', css);
-
-const view = new View();
-
-const display = geometry => {
-  const obj = new XYZObject(geometry);
-  view.displayXYZObject(obj);
-  new SelectionControl(obj, obj.shape.sourceBounds, obj.shape.viewBounds, zoom => {
-      view.focus(zoom);
-    });
-};
-
-const selectElt = document.querySelector("select[name='sources']");
-selectElt.addEventListener('change', () => {
-    new XYZLoader().load(selectElt.value, display);
-  });
-new XYZLoader().load(selectElt.value, display);
-
-const fileLoaderElt = document.getElementById('fileLoader');
-const fileCtrl = new FileLoaderControl(fileLoaderElt, loadedXyz => {
-    display(new XYZLoader().parse(loadedXyz));
-  });
-
-
-function handleHash() {
-  let hash = location.hash.substr(1);
-}
-window.addEventListener('hashchange', handleHash);
-handleHash();
-
-export function init() {
-}
+Index.init();
