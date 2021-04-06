@@ -1,5 +1,5 @@
-import Testing from '../js/lib/testing.js/testing.js';
-import {assertEquals} from '../js/lib/testing.js/testing.js';
+import Testing from '@pablo-mayrgundter/testing.js/testing.js';
+import {assertEquals} from '@pablo-mayrgundter/testing.js/testing.js';
 
 import XYZArray from './XYZArray.js';
 

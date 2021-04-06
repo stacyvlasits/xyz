@@ -19,7 +19,9 @@ const vm = new Vue({
   el: '#app',
   render: h => h(CoordsForm)
 });
-vm.$on('coord-changed', event => { centerMap(event.wgs[0], event.wgs[1]) });
+vm.$on('coord-changed', event => {
+  centerMap(event.wgs[0], event.wgs[1]);
+});
 
 
 function $(id) {
@@ -50,57 +52,3 @@ function centerMap(lat, lon) {
     map.panTo(new google.maps.LatLng(lat, lon));
   }
 }
-
-
-
-function showOutput(lat, lon, N, E) {
-  app.lv95N = N;
-  app.lv95E = E;
-  centerMap(lat, lon);
-}
-
-
-function initDegForm(degForm) {
-  degForm.addEventListener('submit', event => {
-    try {
-      const lat = parseFloat(degForm.latDeg.value);
-      const lon = parseFloat(degForm.lngDeg.value);
-      const [N, E] = wgs2lv95(lat, lon);
-      showOutput(lat, lon, N, E);
-    } catch (e) {
-      console.error(e);
-    }
-    event.preventDefault();
-  });
-}
-
-
-// Dms: Degrees, minutes, seconds
-function initDmsForm(dmsForm) {
-  dmsForm.addEventListener('submit', event => {
-    try {
-      const lat = dms2deg(parseFloat(dmsForm.latDeg.value),
-                          parseFloat(dmsForm.latMin.value),
-                          parseFloat(dmsForm.latSec.value));
-      const lon = dms2deg(parseFloat(dmsForm.lngDeg.value),
-                          parseFloat(dmsForm.lngMin.value),
-                          parseFloat(dmsForm.lngSec.value));
-      const [N, E] = wgs2lv95(lat, lon);
-      showOutput(lat, lon, N, E);
-    } catch (e) {
-      console.error(e);
-    }
-    event.preventDefault();
-  });
-}
-
-
-function init() {
-  const degForm = document.forms.coords_degrees;
-  initDegForm(degForm);
-  initDmsForm(document.forms.coords_dms);
-  degForm.dispatchEvent(new Event('submit'));
-}
-
-
-//init();

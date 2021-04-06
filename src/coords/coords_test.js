@@ -1,7 +1,8 @@
-import Testing from '../lib/testing.js/testing.js';
+import Testing from '@pablo-mayrgundter/testing.js/testing.js';
 import {
   deg2rad,
   deg2sec,
+  deg2dms,
   distanceHaversine,
   dms2deg,
   ellipsoidToLV95,
@@ -68,6 +69,23 @@ tests.add('deg2sec', () => {
     const latSec = deg2sec(latDeg), lngSec = deg2sec(lngDeg);
     tests.assertEquals(169023.8979828, latSec);
     tests.assertEquals(26779.0767156, lngSec);
+  });
+
+
+tests.add('deg2dms', () => {
+    const latDegIn = 46.951082773, lonDegIn = 7.438632421;
+    const [latDeg, latMin, latSec] = deg2dms(latDegIn),
+          [lonDeg, lonMin, lonSec] = deg2dms(lonDegIn);
+    tests.assertEquals(46, latDeg);
+    tests.assertEquals(57, latMin);
+    tests.assertEquals(3.897982800011164, latSec);
+    tests.assertEquals(7, lonDeg);
+    tests.assertEquals(26, lonMin);
+    tests.assertEquals(19.07671560000118, lonSec);
+    const lat = dms2deg(latDeg, latMin, latSec);
+    const lon = dms2deg(lonDeg, lonMin, lonSec);
+    tests.assertEquals(latDegIn, lat);
+    tests.assertEquals(lonDegIn, lon);
   });
 
 

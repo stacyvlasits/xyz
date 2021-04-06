@@ -1,7 +1,7 @@
-import * as THREE from '../lib/three/build/three.module.js';
-import {MapControls} from '../lib/three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three/build/three.module.js';
+import {MapControls} from 'three/examples/jsm/controls/OrbitControls.js';
 
-import Fullscreen from '../lib/@pablo-mayrgundter/fullscreen.js/fullscreen.js';
+import Fullscreen from '@pablo-mayrgundter/fullscreen.js/fullscreen.js';
 import XYZObject from './XYZObject.js';
 
 
@@ -124,7 +124,8 @@ export default class View extends THREE.Scene {
     // Note y swapped to z.
     box.position.z = -viewYOff - boxY - boxDepth + (boxDepth / 2);
     box.position.y -= (ZOOM_EXTRA / 2);
-    //console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`,
+    // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`);
+    // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth}) zoomX:${zoomX}`,
     //            b2s('source', sourceBounds), b2s('view', viewBounds), b2s('zoom', zoomBounds),
     //            box.position);
   }

@@ -31,6 +31,15 @@ export function deg2sec(deg, min = 0, sec = 0) {
 }
 
 
+export function deg2dms(degIn) {
+  const deg = Math.floor(degIn);
+  const minIn = ((degIn % 1) * 60);
+  const min = Math.floor(minIn);
+  const sec = ((minIn % 1) * 60);
+  return [deg, min, sec];
+}
+
+
 /**
  * 4.1 Approximate formulas for the transformation between Swiss
  * projection coordinates and WGS84.
