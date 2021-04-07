@@ -1,5 +1,5 @@
 {
-  "name": "XYZ-Tool",
+  "name": "xyz",
   "version": "1.0.0",
   "description": "XYZ extractor.",
   "scripts": {
@@ -8,19 +8,31 @@
     "build": "vue-cli-service build",
     "build:coord": "vue-cli-service build --mode=development src/coords/main.js"
   },
-  "keywords": [],
+  "keywords": ["xyz","gis","aec","webgl","threejs"],
   "author": "Pablo Mayrgundter",
   "dependencies": {
     "@pablo-mayrgundter/diurnal.js": "^1.0.5",
     "@pablo-mayrgundter/fullscreen.js": "^1.0.1",
-    "@pablo-mayrgundter/testing.js": "^1.0.0",
     "three": "^0.126.1",
     "vue": "^2.6.12"
   },
   "devDependencies": {
+    "@pablo-mayrgundter/testing.js": "^1.0.0",
     "@vue/cli-service": "^4.5.12",
     "css-loader": "^3.6.0",
     "vue-template-compiler": "^2.6.12"
   },
-  "postcss": {}
+  "postcss": {},
+  "directories": {
+    "bin": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buildrs/xyz.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/buildrs/xyz/issues"
+  },
+  "homepage": "https://github.com/buildrs/xyz#readme"
 }
