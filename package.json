@@ -1,5 +1,5 @@
 {
-  "name": "xyz",
+  "name": "@buildrs/xyz",
   "version": "1.0.0",
   "description": "XYZ extractor.",
   "scripts": {
