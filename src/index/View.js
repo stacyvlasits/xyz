@@ -21,12 +21,25 @@ export default class View extends THREE.Scene {
     this.animCb = animCb;
     this.width = container.innerWidth;
     this.height = container.innerHeight;
-    this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 1e4);
+    this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 1e10);
     this.camera.position.set(0, 3e1, 1.5e2);
     this.add(this.camera);
     this.add(new THREE.AxesHelper);
+    const radius = 6357 * 1000; // (radius in meters; 1 gl unit = 1 meter)
+    const globe = new THREE.Mesh(
+      new THREE.SphereGeometry(radius, 120, 120 / 2),
+      new THREE.MeshPhongMaterial({
+        flatShading: false,
+        wireframe: true,
+        color: 0xaaffaa,
+      }));
+    const altitudeOffset = 1e1; // todo
+    globe.position.set(0, -radius - altitudeOffset, 0);
+    globe.rotateX(Math.PI / 2);
+    this.add(globe);
     this.background = new THREE.Color(0xbfd1e5);
     const light = new THREE.PointLight();
+    //this.add(new THREE.AmbientLight());
     // TODO: better shadows.
     // https://github.com/mrdoob/three.js/issues/8238
     // https://github.com/mrdoob/three.js/pull/15670
@@ -36,7 +49,7 @@ export default class View extends THREE.Scene {
     light.shadow.camera.far = 250;
     light.shadow.camera.width = 256;
     light.shadow.camera.height = 256;
-    light.position.set(-5e1, 1e2, -5e1);
+    light.position.set(-5e1, 1e6, -5e1);
     this.add(light);
     this.light = light;
     const shadowLight = light.clone();
