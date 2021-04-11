@@ -36,7 +36,7 @@ export function deg2dms(degIn) {
   const minIn = ((degIn % 1) * 60);
   const min = Math.floor(minIn);
   const sec = ((minIn % 1) * 60);
-  return [deg, min, sec];
+  return {deg: deg, min: min, sec: sec};
 }
 
 

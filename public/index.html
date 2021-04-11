@@ -23,7 +23,10 @@
       </form>
       <h2>Project data</h2>
       <h3>by reference point</h3>
-      <div id="app"></div>
+      <div id="app">
+        <here :latitude="latitude" :longitude="longitude"
+              @coord-radius-change="onCoordRadiusChange"></here>
+      </div>
     </div>
   </body>
 </html>

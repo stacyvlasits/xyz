@@ -6,26 +6,38 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build-lib": "rollup -c rollup.config.js",
     "build:coord": "vue-cli-service build --mode=development src/coords/main.js"
   },
-  "keywords": ["xyz","gis","aec","webgl","threejs"],
+  "keywords": [
+    "xyz",
+    "gis",
+    "aec",
+    "webgl",
+    "threejs"
+  ],
   "author": "Pablo Mayrgundter",
   "dependencies": {
     "@pablo-mayrgundter/diurnal.js": "^1.0.5",
     "@pablo-mayrgundter/fullscreen.js": "^1.0.1",
     "three": "^0.126.1",
-    "vue": "^2.6.12"
+    "vue": "^3"
   },
   "devDependencies": {
     "@pablo-mayrgundter/testing.js": "^1.0.0",
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-node-resolve": "^11.2.1",
     "@vue/cli-service": "^4.5.12",
     "css-loader": "^3.6.0",
+    "rollup": "^2.44.0",
+    "rollup-plugin-import-css": "^2.0.1",
+    "rollup-plugin-vue": "^6.0.0",
     "vue-template-compiler": "^2.6.12"
   },
   "postcss": {},
-  "directories": {
-    "bin": "src"
-  },
+  "main": "dist/xyz.js",
+  "module": "dist/xyz.module.js",
+  "files": "dist/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/buildrs/xyz.git"

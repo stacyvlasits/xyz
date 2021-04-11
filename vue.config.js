@@ -3,4 +3,5 @@ module.exports = {
     index: 'src/index/index.js',
     coords: 'src/coords/main.js'
   },
+  runtimeCompiler: true
 };

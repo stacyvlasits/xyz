@@ -1,5 +1,5 @@
+import * as Vue from 'vue';
 import * as Diurnal from '@pablo-mayrgundter/diurnal.js';
-import Vue from 'vue';
 import CoordsForm from './CoordsForm.vue';
 import {
   deg2rad,
@@ -15,13 +15,24 @@ Diurnal.bind();
 document.querySelector('#diurnal-controls').style.visibility = 'hidden';
 
 
-const vm = new Vue({
-  el: '#app',
-  render: h => h(CoordsForm)
+const bern = { lat: 46.951082773, lng: 7.438632421 };
+const app = Vue.createApp({
+  data() {
+    return {
+      lat: bern.lat,
+      lon: bern.lng
+    }
+  },
+  components: {
+    'coords-form': CoordsForm
+  },
+  methods: {
+    onCoordChanged(event) {
+      centerMap(event.wgs.lat, event.wgs.lon);
+    }
+  }
 });
-vm.$on('coord-changed', event => {
-  centerMap(event.wgs[0], event.wgs[1]);
-});
+app.mount('#app');
 
 
 function $(id) {
@@ -33,7 +44,6 @@ let map, marker;
 
 // Initialize and add the map
 window.initMap = () => {
-  const bern = { lat: 46.951082773, lng: 7.438632421 };
   map = new google.maps.Map(document.getElementById("map"), {
     zoom: 17,
     center: bern,

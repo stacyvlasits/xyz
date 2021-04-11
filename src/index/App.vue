@@ -1,8 +1,6 @@
 <template>
 <div>
-  <coords-form v-on:coord-changed="onLVCoord($event)"
-               v-bind:init-coord="initCoord"
-               v-bind:init-lv="initLv"></coords-form>
+  <coords-form :lat="lat" :lon="lon" @coord-changed="onLVCoord"></coords-form>
   <form>
     <table>
       <tr>
@@ -17,7 +15,26 @@
 </template>
 <script>
   import CoordsForm from '../coords/CoordsForm.vue';
+  import {wgs2lv95} from '../coords/coords.js';
   export default {
+    props: {
+      latitude: Number,
+      longitude: Number,
+    },
+    data() {
+      const [N, E] = wgs2lv95(this.latitude, this.longitude);
+      return {
+        lat: this.latitude,
+        lon: this.longitude,
+        radius: 0,
+        coord: {
+          lat: this.latitude,
+          lon: this.longitude,
+          N: N,
+          E: E
+        }
+      }
+    },
     components: {
       'coords-form': CoordsForm
     },
@@ -30,53 +47,28 @@
       },
       setRadius(r) {
         this.radius = r;
+        console.log('App.vue#setRadius', r);
       },
       onLVCoord(ev) {
         const c = this.coord;
         [c.lat, c.lon, c.N, c.E] = [ev.wgs.lat, ev.wgs.lon, ev.lv95.N, ev.lv95.E];
-      }
-    },
-    data() {
-      return {
-        initCoord: {
-          lat: 46.951082773,
-          lon: 7.438632421,
-          latDeg: 46,
-          latMin: 57,
-          latSec: 3.89798,
-          lonDeg: 7,
-          lonMin: 26,
-          lonSec: 19.07672,
-        },
-        initLv: {
-          N: 1200000,
-          E: 2600000,
-          nMin: 1242525.25,
-          nMax: 1242594.75,
-          eMin: 2683475.25,
-          eMax: 2683539.75
-        },
-        coord: {
-          lat: 46.951082773,
-          lon: 7.438632421,
-          N: 1200000,
-          E: 2600000
-        },
-        radius: 10
+        console.log('App.vue#onLVCoord: ', c);
       }
     },
     watch: {
       coord: {
         handler() {
-          this.$root.$emit('coord-radius-change',
-                           {coord: this.coord, radius: parseFloat(this.radius)});
+          console.log('App.vue#watch.coord: ', this.coord);
+          this.$emit('coord-radius-change',
+                     {coord: this.coord, radius: parseFloat(this.radius)});
         },
         deep: true
       },
       radius: {
         handler() {
-          this.$root.$emit('coord-radius-change',
-                           {coord: this.coord, radius: parseFloat(this.radius)});
+          console.log('App.vue#watch.radius: ', this.radius);
+          this.$emit('coord-radius-change',
+                     {coord: this.coord, radius: parseFloat(this.radius)});
         }
       }
     }

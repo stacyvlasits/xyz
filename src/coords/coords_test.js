@@ -73,20 +73,20 @@ tests.add('deg2sec', () => {
 
 
 tests.add('deg2dms', () => {
-    const latDegIn = 46.951082773, lonDegIn = 7.438632421;
-    const [latDeg, latMin, latSec] = deg2dms(latDegIn),
-          [lonDeg, lonMin, lonSec] = deg2dms(lonDegIn);
-    tests.assertEquals(46, latDeg);
-    tests.assertEquals(57, latMin);
-    tests.assertEquals(3.897982800011164, latSec);
-    tests.assertEquals(7, lonDeg);
-    tests.assertEquals(26, lonMin);
-    tests.assertEquals(19.07671560000118, lonSec);
-    const lat = dms2deg(latDeg, latMin, latSec);
-    const lon = dms2deg(lonDeg, lonMin, lonSec);
-    tests.assertEquals(latDegIn, lat);
-    tests.assertEquals(lonDegIn, lon);
-  });
+  const latDegIn = 46.951082773, lonDegIn = 7.438632421;
+  const {deg: latDeg, min: latMin, sec: latSec} = deg2dms(latDegIn),
+        {deg: lonDeg, min: lonMin, sec: lonSec} = deg2dms(lonDegIn);
+  tests.assertEquals(46, latDeg);
+  tests.assertEquals(57, latMin);
+  tests.assertEquals(3.897982800011164, latSec);
+  tests.assertEquals(7, lonDeg);
+  tests.assertEquals(26, lonMin);
+  tests.assertEquals(19.07671560000118, lonSec);
+  const lat = dms2deg(latDeg, latMin, latSec);
+  const lon = dms2deg(lonDeg, lonMin, lonSec);
+  tests.assertEquals(latDegIn, lat);
+  tests.assertEquals(lonDegIn, lon);
+});
 
 
 tests.add('distanceHaversine', () => {

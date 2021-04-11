@@ -1,6 +1,5 @@
 <template>
-<div>
-  <p>
+  <div>
     <select name="input_format" v-on:change="onSelect($event.target.value)">
       <option value="dms">Deg°/Min'/Sec"</option>
       <option value="deg">Deg°</option>
@@ -56,54 +55,48 @@
         </tr>
       </table>
     </form>
-</div>
+  </div>
 </template>
 <script>
 import {dms2deg, wgs2lv95, lv952wgs, deg2dms} from './coords.js';
+
 export default {
   props: {
-    initCoord: Object,
-    initLv: Object
+    lat: Number,
+    lon: Number,
   },
   data() {
+    const [N, E] = wgs2lv95(this.lat, this.lon);
     return {
       dms: {
         show: true,
-        lat: {
-          deg: this.initCoord.latDeg || 2,
-          min: this.initCoord.latMin || 0,
-          sec: this.initCoord.latSec || 0
-        },
-        lon: {
-          deg: this.initCoord.lonDeg || 0,
-          min: this.initCoord.lonMin || 0,
-          sec: this.initCoord.lonSec || 0
-        }
+        lat: deg2dms(this.lat),
+        lon: deg2dms(this.lon)
       },
       deg: {
         show: false,
-        lat: this.initCoord.lat || 0,
-        lon: this.initCoord.lon || 0
+        lat: this.lat,
+        lon: this.lon
       },
       lv95: {
         show: false,
-        N: this.initLv.N || 1200000,
-        E: this.initLv.E || 2600000,
-        nMin: this.initLv.nMin || Number.MIN_VALUE,
-        nMax: this.initLv.nMax || Number.MAX_VALUE,
-        eMin: this.initLv.eMin || Number.MIN_VALUE,
-        eMax: this.initLv.eMax || Number.MAX_VALUE,
+        N: N,
+        E: E,
+        nMin: Number.MIN_VALUE,
+        nMax: Number.MAX_VALUE,
+        eMin: Number.MIN_VALUE,
+        eMax: Number.MAX_VALUE,
       },
       NSlider: 50,
       ESlider: 50,
       coord: {
-        lat: this.initCoord.lat || 0,
-        lon: this.initCoord.lon || 0,
+        lat: this.lat,
+        lon: this.lon,
         latMin: Number.MIN_VALUE,
         latMax: Number.MAX_VALUE,
         lonMin: Number.MIN_VALUE,
         lonMax: Number.MAX_VALUE
-      },
+      }
     }
   },
   methods: {
@@ -122,9 +115,8 @@ export default {
       const lat = this.coord.lat, lon = this.coord.lon;
       switch(value) {
       case 'dms':
-        const dms = this.dms;
-        [dms.lat.deg, dms.lat.min, dms.lat.sec] = deg2dms(lat);
-        [dms.lon.deg, dms.lon.min, dms.lon.sec] = deg2dms(lon);
+        this.dms.lat = deg2dms(lat);
+        this.dms.lon = deg2dms(lon);
         break;
       case 'deg': [this.deg.lat, this.deg.lon] = [lat, lon]; break;
       case 'lv95': [this.lv95.N, this.lv95.E] = wgs2lv95(lat, lon); break;
@@ -132,12 +124,14 @@ export default {
       this[value].show = true;
     }
   },
+  emits: ['coord-changed'],
   watch: {
     coord: {
       handler() {
         const c = this.coord;
         const lv = wgs2lv95(c.lat, c.lon);
         const changeEvent = {wgs:{lat: c.lat, lon: c.lon}, lv95:{N:lv[0], E:lv[1]}};
+        console.log('CoordsForm: coord changed: ', changeEvent);
         this.$root.$emit('coord-changed', changeEvent);
         this.$emit('coord-changed', changeEvent);
       },
