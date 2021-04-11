@@ -1,7 +1,8 @@
 module.exports = {
   pages: {
-    index: 'src/index/index.js',
-    coords: 'src/coords/main.js'
+    index: 'js/index/index.js',
+    coords: 'js/coords/main.js'
   },
+  outputDir: 'demo',
   runtimeCompiler: true
 };
