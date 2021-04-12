@@ -16,7 +16,6 @@ Diurnal.bind();
 
 let sc;
 const view = new View();
-const TEST = Vue.ref({a:1});
 const bern = { lat: 46.951082773, lng: 7.438632421 };
 const app = Vue.createApp({
   components: {
@@ -26,8 +25,7 @@ const app = Vue.createApp({
     return {
       latitude: bern.lat,
       longitude: bern.lng,
-      radius: 0,
-      test: TEST
+      radius: 0
     }
   },
   methods: {
@@ -69,8 +67,6 @@ const display = geometry => {
   const bounds = obj.shape.sourceBounds;
   const N = bounds.min.y + (bounds.max.y - bounds.min.y) / 2;
   const E = bounds.min.x + (bounds.max.x - bounds.min.x) / 2;
-  console.log('index.js#display...');
-  TEST.a = 2;
   sc = new SelectionControl(obj, obj.shape.sourceBounds, obj.shape.viewBounds, zoom => {
     view.focus(zoom);
   });
@@ -80,7 +76,7 @@ const display = geometry => {
 const selectElt = document.querySelector("select[name='sources']");
 selectElt.addEventListener('change', () => {
     new XYZLoader().load(selectElt.value, display);
-  });
+});
 new XYZLoader().load(selectElt.value, display);
 
 const fileLoaderElt = document.getElementById('fileLoader');

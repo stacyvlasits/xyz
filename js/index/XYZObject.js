@@ -8,6 +8,10 @@ export default class XYZObject extends THREE.Object3D {
     super();
     this.origArr = [...geometry.attributes.position.array];
     this.srcArr = new XYZArray(this.origArr);
+    if (isNaN(this.origArr[0])) {
+      console.log(this.origArr, this.srcArr);
+      throw new Error('Bogus data in source geometry.. found NaNs');
+    }
     const sourceBounds = new THREE.Box3;
     geometry.computeBoundingBox();
     sourceBounds.copy(geometry.boundingBox);
