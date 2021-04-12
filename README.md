@@ -1,7 +1,24 @@
 # XYZ Extract Tool
 
-[Online XYZ tool](https://buildrs.github.io/xyz/)
+See [Demo XYZ extract tool](https://buildrs.github.io/xyz/)
 
+## Dev (demo)
+```
+> npm run serve
+```
+
+## Build (demo)
+```
+> npm run build
+```
+
+## Publish @buildrs/xyz NPM
+```
+> npx rollup -c
+> npm publish
+```
+
+# Commandline Tool
 
 ## xyz.py
 Command for working with .xyz files.
