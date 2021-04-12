@@ -45,12 +45,10 @@
       <table>
         <tr>
           <td>X:</td>
-          <td><input v-model="ESlider" type="range" min="0" max="100"></td>
           <td><input v-model="lv95.E" type="number" step="any"></td>
         </tr>
         <tr>
           <td>Y:</td>
-          <td><input v-model="NSlider" type="range" min="0" max="100"></td>
           <td><input v-model="lv95.N" type="number" step="any"></td>
         </tr>
       </table>
@@ -62,21 +60,20 @@ import {dms2deg, wgs2lv95, lv952wgs, deg2dms} from './coords.js';
 
 export default {
   props: {
-    lat: Number,
-    lon: Number,
+    coordinate: Object
   },
   data() {
-    const [N, E] = wgs2lv95(this.lat, this.lon);
+    const [N, E] = wgs2lv95(this.coordinate.lat, this.coordinate.lon);
     return {
       dms: {
         show: true,
-        lat: deg2dms(this.lat),
-        lon: deg2dms(this.lon)
+        lat: deg2dms(this.coordinate.lat),
+        lon: deg2dms(this.coordinate.lon)
       },
       deg: {
         show: false,
-        lat: this.lat,
-        lon: this.lon
+        lat: this.coordinate.lat,
+        lon: this.coordinate.lon
       },
       lv95: {
         show: false,
@@ -87,11 +84,9 @@ export default {
         eMin: Number.MIN_VALUE,
         eMax: Number.MAX_VALUE,
       },
-      NSlider: 50,
-      ESlider: 50,
       coord: {
-        lat: this.lat,
-        lon: this.lon,
+        lat: this.coordinate.lat,
+        lon: this.coordinate.lon,
         latMin: Number.MIN_VALUE,
         latMax: Number.MAX_VALUE,
         lonMin: Number.MIN_VALUE,
@@ -103,6 +98,8 @@ export default {
     setLatLon(lat, lon) {
       this.deg.lat = lat;
       this.deg.lon = lon;
+      this.dms.lat = deg2dms(lat);
+      this.dms.lon = deg2dms(lon);
     },
     setLv95(N, E) {
       this.lv95.N = N;
@@ -126,12 +123,19 @@ export default {
   },
   emits: ['coord-changed'],
   watch: {
+    coordinate: {
+      handler() {
+        //console.log('CoordsForm#coordiate handler: ', this.coordinate);
+        this.setLatLon(this.coordinate.lat, this.coordinate.lon);
+      },
+      deep: true
+    },
     coord: {
       handler() {
         const c = this.coord;
         const lv = wgs2lv95(c.lat, c.lon);
         const changeEvent = {wgs:{lat: c.lat, lon: c.lon}, lv95:{N:lv[0], E:lv[1]}};
-        console.log('CoordsForm: coord changed: ', changeEvent);
+        //console.log('CoordsForm: coord changed: ', changeEvent);
         this.$root.$emit('coord-changed', changeEvent);
         this.$emit('coord-changed', changeEvent);
       },
@@ -158,24 +162,6 @@ export default {
       },
       deep: true
     },
-    NSlider: {
-      handler() {
-        const min = this.lv95.nMin, max = this.lv95.nMax;
-        const rangeN = this.NSlider;
-        const value = parseFloat((min + (rangeN / 100 * (max - min))).toFixed(2));
-        this.lv95.N = value;
-        [this.coord.lat, this.coord.lon] = lv952wgs(this.lv95.N, this.lv95.E);
-      }
-    },
-    ESlider: {
-      handler() {
-        const min = this.lv95.eMin, max = this.lv95.eMax;
-        const rangeE = this.ESlider;
-        const value = parseFloat((min + (rangeE / 100 * (max - min))).toFixed(2));
-        this.lv95.E = value;
-        [this.coord.lat, this.coord.lon] = lv952wgs(this.lv95.N, this.lv95.E);
-      }
-    }
   }
 };
 </script>

@@ -19,8 +19,10 @@ const bern = { lat: 46.951082773, lng: 7.438632421 };
 const app = Vue.createApp({
   data() {
     return {
-      lat: bern.lat,
-      lon: bern.lng
+      coordinate: {
+        lat: bern.lat,
+        lon: bern.lng
+      }
     }
   },
   components: {

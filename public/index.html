@@ -24,8 +24,8 @@
       <h2>Project data</h2>
       <h3>by reference point</h3>
       <div id="app">
-        <here :latitude="latitude" :longitude="longitude"
-              @coord-radius-change="onCoordRadiusChange"></here>
+        <extract-tool :coordinate="coordinate" :radius="radius"
+              @coord-radius-change="onCoordRadiusChange"></extract-tool>
       </div>
     </div>
   </body>

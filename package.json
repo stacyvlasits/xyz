@@ -1,11 +1,11 @@
 {
   "name": "@buildrs/xyz",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "XYZ extractor.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "vue-cli-service serve --no-clean",
-    "build": "vue-cli-service build --no-clean",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "build-lib": "rollup -c rollup.config.js",
     "build:coord": "vue-cli-service build --mode=development src/coords/main.js"
   },

@@ -86,6 +86,10 @@ export default class View extends THREE.Scene {
   }
 
 
+
+  /**
+   * @param zoomBoundsIn The active zoom in world coordinates (LV95).
+   */
   focus(zoomBoundsIn) {
     if (zoomBoundsIn == null) {
       throw new Error('zoomBoundsIn null');
@@ -94,9 +98,11 @@ export default class View extends THREE.Scene {
       min: { x: zoomBoundsIn.Xmin, y: zoomBoundsIn.Ymin },
       max: { x: zoomBoundsIn.Xmax, y: zoomBoundsIn.Ymax }
     };
+    // Source bounds in world coordinates (LV95).
     const sourceBounds = this.xyzObj.children[0].sourceBounds;
     const sourceWidth = sourceBounds.max.x - sourceBounds.min.x;
     const sourceDepth = sourceBounds.max.y - sourceBounds.min.y;
+    // View bounds in scaled scene coordinates (webgl units).
     const viewBounds = this.xyzObj.children[0].viewBounds;
     const viewWidth = viewBounds.max.x - viewBounds.min.x;
     const viewDepth = viewBounds.max.y - viewBounds.min.y;
@@ -109,6 +115,7 @@ export default class View extends THREE.Scene {
     const ZOOM_EXTRA = 1;
     const zoomHeight = viewBounds.max.z - viewBounds.min.z + ZOOM_EXTRA;
     const boxX = zoomX - sourceBounds.min.x;
+    //console.log(`zoomX(${zoomX}) - sourceBounds.min.x(${sourceBounds.min.x})`);
     const boxY = zoomY - sourceBounds.min.y;
     const boxWidth = zoomWidth / sourceWidth * viewWidth;
     const boxHeight = zoomHeight;
@@ -137,7 +144,7 @@ export default class View extends THREE.Scene {
     // Note y swapped to z.
     box.position.z = -viewYOff - boxY - boxDepth + (boxDepth / 2);
     box.position.y -= (ZOOM_EXTRA / 2);
-     console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`);
+    // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`);
     // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth}) zoomX:${zoomX}`,
     //            b2s('source', sourceBounds), b2s('view', viewBounds), b2s('zoom', zoomBounds),
     //            box.position);
