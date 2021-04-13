@@ -166,3 +166,35 @@ export default {
   }
 };
 </script>
+<style scoped>
+.coords-forms input {
+  margin: 5px;
+  padding: 5px;
+}
+
+
+.two-digit {
+  width: 30pt;
+}
+
+
+.five-digit {
+  width: 75pt;
+}
+
+
+.ten-digit {
+  width: 150pt;
+}
+
+
+.coords-forms span {
+    margin-right: 27px;
+    padding-left: 3px;
+}
+
+
+.coord-form {
+  margin-top: 15px;
+}
+</style>

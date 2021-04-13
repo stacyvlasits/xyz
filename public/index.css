@@ -46,11 +46,6 @@ h3 {
 }
 
 
-#control-panel select {
-    padding: 5px;
-}
-
-
 #pad {
   float: right;
   padding: 2em;
@@ -71,55 +66,4 @@ h3 {
 .bounds {
   font-size: small;
   color: #555;
-}
-
-
-.button {
-  display: inline-block;
-  text-decoration: none;
-  background-color: #eee;
-  color: lightgrey;
-  margin-top: 5px;
-  padding: 5px;
-  border: 1px solid lightgrey;
-  border-bottom: 1px solid darkgrey;
-  border-right: 1px solid darkgrey;
-}
-
-
-.button[href] {
-  background-color: green;
-  color: white;
-}
-
-
-.coords-radius-form input, .coords-forms input {
-  margin: 5px;
-  padding: 5px;
-}
-
-
-.two-digit {
-  width: 30pt;
-}
-
-
-.five-digit {
-  width: 75pt;
-}
-
-
-.ten-digit {
-  width: 150pt;
-}
-
-
-.coords-forms span {
-    margin-right: 27px;
-    padding-left: 3px;
-}
-
-
-.coord-form {
-  margin-top: 15px;
 }

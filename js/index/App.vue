@@ -67,3 +67,33 @@
     }
   }
 </script>
+<style scoped>
+.coords-radius-form input {
+  margin: 5px;
+  padding: 5px;
+}
+
+
+.button {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #eee;
+  color: lightgrey;
+  margin-top: 5px;
+  padding: 5px;
+  border: 1px solid lightgrey;
+  border-bottom: 1px solid darkgrey;
+  border-right: 1px solid darkgrey;
+}
+
+
+.button[href] {
+  background-color: green;
+  color: white;
+}
+
+
+select {
+    padding: 5px;
+}
+</style>
