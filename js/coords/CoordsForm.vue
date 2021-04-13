@@ -1,55 +1,56 @@
 <template>
-  <div>
+  <div class="coords-forms">
+    <span style="width: 50pt">System:</span>
     <select name="input_format" v-on:change="onSelect($event.target.value)">
       <option value="dms">Deg°/Min'/Sec"</option>
       <option value="deg">Deg°</option>
       <option value="lv95">LV95</option>
     </select>
-    <form name="coords_dms" v-show="dms.show">
+    <form name="coords_dms" v-show="dms.show" class="coord-form">
       <table>
         <tr>
           <td>Latitude:</td>
           <td>
-            <input v-model="dms.lat.deg" type="number" step="any">°
-            <input v-model="dms.lat.min" type="number" step="any">'
-            <input v-model="dms.lat.sec" type="number" step="0.05">
+            <input v-model="dms.lat.deg" type="number" step="any" class="two-digit">°
+            <input v-model="dms.lat.min" type="number" step="any" size="3" class="two-digit">'
+            <input v-model="dms.lat.sec" type="number" step="0.05" size="5" class="five-digit">"
           </td>
         </tr>
         <tr>
           <td>Longitude:</td>
           <td>
-            <input v-model="dms.lon.deg" type="number" step="any">°
-            <input v-model="dms.lon.min" type="number" step="any">'
-            <input v-model="dms.lon.sec" type="number" step="0.05">
+            <input v-model="dms.lon.deg" type="number" step="any" class="two-digit">°
+            <input v-model="dms.lon.min" type="number" step="any" class="two-digit">'
+            <input v-model="dms.lon.sec" type="number" step="0.05" class="five-digit">"
           </td>
         </tr>
       </table>
     </form>
-    <form name="coords_degrees" v-show="deg.show">
+    <form name="coords_degrees" v-show="deg.show" class="coord-form">
       <table>
         <tr>
           <td>Latitude:</td>
           <td>
-            <input v-model="deg.lat" type="number" step="any">° N
+            <input v-model="deg.lat" type="number" step="any" class="ten-digit">° N
           </td>
         </tr>
         <tr>
           <td>Longitude:</td>
           <td>
-            <input v-model="deg.lon" type="number" step="any">° E
+            <input v-model="deg.lon" type="number" step="any" class="ten-digit">° E
           </td>
         </tr>
       </table>
     </form>
-    <form name="coords_lv95" v-show="lv95.show">
+    <form name="coords_lv95" v-show="lv95.show" class="coord-form">
       <table>
         <tr>
-          <td>X:</td>
-          <td><input v-model="lv95.E" type="number" step="any"></td>
+          <td>Latitude:</td>
+          <td><input v-model="lv95.N" type="number" step="any" class="ten-digit"> meters North</td>
         </tr>
         <tr>
-          <td>Y:</td>
-          <td><input v-model="lv95.N" type="number" step="any"></td>
+          <td>Longitude:</td>
+          <td><input v-model="lv95.E" type="number" step="any" class="ten-digit"> meters East</td>
         </tr>
       </table>
     </form>

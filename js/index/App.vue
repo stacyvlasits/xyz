@@ -1,12 +1,12 @@
 <template>
-<div>
+<div class="coords-radius-form">
   <coords-form :coordinate="coordinate" @coord-changed="onLVCoord"></coords-form>
   <form>
     <table>
       <tr>
         <td>Radius:</td>
         <td><input v-model="radius" type="range" min="0" max="100" step="0.5"></td>
-        <td><input v-model="radius" type="number" step="0.5"></td>
+        <td><input v-model="radius" type="number" step="0.5"> meters</td>
       </tr>
     </table>
     <a id="dlbtn" class="button" download="extract.xyz">Download</a>
