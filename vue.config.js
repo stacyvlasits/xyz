@@ -4,5 +4,8 @@ module.exports = {
     coords: 'js/coords/main.js'
   },
   outputDir: 'docs',
-  runtimeCompiler: true
+  runtimeCompiler: true,
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/xyz/'
+    : '/'
 };
