@@ -3,6 +3,6 @@ module.exports = {
     index: 'js/index/index.js',
     coords: 'js/coords/main.js'
   },
-  outputDir: 'demo',
+  outputDir: 'docs',
   runtimeCompiler: true
 };
