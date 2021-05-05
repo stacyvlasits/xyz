@@ -7,10 +7,14 @@
   <body class="diurnal-bright">
     <h1>Project Tool</h1>
     <div id="pad">
-      <div id="view" style="width: 50%; height: 50%; min-width: 640px; min-height: 480px"></div>
+      <div id="map" style="width: 50%; height: 50%; min-width: 640px; min-height: 480px"></div>
     </div>
+    <!-- 3D -->
+<!--    <div id="pad">
+      <div id="view" style="width: 50%; height: 50%; min-width: 640px; min-height: 480px"></div>
+    </div>-->
     <div id="control-panel">
-      <h2>Elevation Data Source</h2>
+<!--      <h2>Elevation Data Source</h2>
       <label for="area">Choose an area:</label>
       <select name="sources">
         <option value="testdata/zurich-sample.xyz">Canton Zürich (sample)</option>
@@ -18,15 +22,24 @@
       </select>
       <form>
         Or upload your own: <input id="fileLoader" type="file" accept=".xyz">
-      </form>
+      </form>-->
       <div id="app">
         <h2>Project Reference Coordinate</h2>
-        <coords-form :coordinate="coordinate" @coord-changed="onLVCoord"></coords-form>
-        <h2>Project Bounds</h2>
-        <bounds-form :min="min" :max="max" @bounds-changed="onBounds"></bounds-form>
-        <h2>Tools</h2>
-        <project-tools :coordinate="pri_coordinate" :min="pri_min" :max="pri_max"></project-tools><br/>
+        <coords-form :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
+        <p>Altitude: <input v-model.number="pri_altitude" type="number" step="any" class="three-digit"> meters
+        <p>Northing: <input v-model.number="pri_northing" type="number" step="any" class="ten-digit">°
+        <!--<h2>Project Bounds</h2>
+        <bounds-form :min="min" :max="max" @bounds-changed="onBounds"></bounds-form>-->
+        <project-tools
+          :coordinate="pri_coordinate"
+          :min="pri_min"
+          :max="pri_max"
+          :altitude="pri_altitude"
+          :northing="pri_northing"></project-tools><br/>
       </div>
     </div>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC23zX_LsVxJr9ZBqlpVcBZEDTVFJTFzZA&callback=window.initMap&libraries=&v=weekly"
+      defer></script>
   </body>
 </html>
