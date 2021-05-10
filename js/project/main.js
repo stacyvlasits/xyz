@@ -9,6 +9,7 @@ import css from '../../public/index.css';
 
 
 let comp;
+let map, marker, boundsRect;
 
 const bern = { lat: 46.951082773, lng: 7.438632421 };
 [bern.N, bern.E] = wgs2lv95(bern.lat, bern.lng);
@@ -76,6 +77,7 @@ const app = Vue.createApp({
       centerMap(ev.wgs.lat, ev.wgs.lon);
     },
     onBounds(ev) {
+      console.log(ev);
       this.pri_min.lat = ev.min.wgs.lat;
       this.pri_min.lon = ev.min.wgs.lon;
       this.pri_min.N = ev.min.lv95.N;
@@ -84,14 +86,37 @@ const app = Vue.createApp({
       this.pri_max.lon = ev.max.wgs.lon;
       this.pri_max.N = ev.max.lv95.N;
       this.pri_max.E = ev.max.lv95.E;
-      //console.log('main.js#onBounds', this.pri_min, this.pri_max);
+      const boxCoords = [
+        { lat: this.pri_min.lat, lng: this.pri_min.lon },
+        { lat: this.pri_min.lat, lng: this.pri_max.lon },
+        { lat: this.pri_max.lat, lng: this.pri_max.lon },
+        { lat: this.pri_max.lat, lng: this.pri_min.lon },
+        { lat: this.pri_min.lat, lng: this.pri_min.lon },
+      ];
+      if (boundsRect) {
+        boundsRect.setMap(null);
+      }
+      boundsRect = new google.maps.Rectangle({
+        paths: boxCoords,
+        strokeColor: "#000000",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+        map,
+        bounds: {
+          north: this.pri_max.lat,
+          south: this.pri_min.lat,
+          east: this.pri_max.lon,
+          west: this.pri_min.lon,
+        }
+      });
+      boundsRect.setMap(map);
+      console.log(map, boundsRect);
+      console.log('main.js#onBounds message received', this.pri_min, this.pri_max);
     }
   }
 });
 app.mount('#app');
 
-
-let map, marker;
 
 // Initialize and add the map
 window.initMap = () => {

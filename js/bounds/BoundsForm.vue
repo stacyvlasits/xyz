@@ -46,6 +46,12 @@ export default {
   },
   methods: {
     onMin(ev) {
+      if (this.bounds.max.wgs.lat == null) {
+        this.bounds.max.wgs.lat = this.max.lat;
+        this.bounds.max.wgs.lon = this.max.lon;
+        this.bounds.max.lv95.N = this.max.N;
+        this.bounds.max.lv95.E = this.max.E;
+      }
       this.bounds.min.wgs.lat = ev.wgs.lat;
       this.bounds.min.wgs.lon = ev.wgs.lon;
       this.bounds.min.lv95.N = ev.lv95.N;
@@ -54,11 +60,17 @@ export default {
       this.$emit('bounds-changed', this.bounds);
     },
     onMax(ev) {
+      if (this.bounds.min.wgs.lat == null) {
+        this.bounds.min.wgs.lat = this.min.lat;
+        this.bounds.min.wgs.lon = this.min.lon;
+        this.bounds.min.lv95.N = this.min.N;
+        this.bounds.min.lv95.E = this.min.E;
+      }
       this.bounds.max.wgs.lat = ev.wgs.lat;
       this.bounds.max.wgs.lon = ev.wgs.lon;
       this.bounds.max.lv95.N = ev.lv95.N;
       this.bounds.max.lv95.E = ev.lv95.E;
-      console.log('BoundsForm#onMax: ', this.bounds);
+      console.log('BoundsForm#onMax: sending message', this.bounds);
       this.$emit('bounds-changed', this.bounds);
     },
   },

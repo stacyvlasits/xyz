@@ -28,8 +28,13 @@
         <coords-form :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
         <p>Altitude: <input v-model.number="pri_altitude" type="number" step="any" class="three-digit"> meters
         <p>Northing: <input v-model.number="pri_northing" type="number" step="any" class="ten-digit">°
-        <!--<h2>Project Bounds</h2>
-        <bounds-form :min="min" :max="max" @bounds-changed="onBounds"></bounds-form>-->
+
+        <h2>Project Bounds</h2>
+        <bounds-form
+          :min="coordinate"
+          :max="coordinate"
+          @bounds-changed="onBounds"></bounds-form>
+
         <project-tools
           :coordinate="pri_coordinate"
           :min="pri_min"
