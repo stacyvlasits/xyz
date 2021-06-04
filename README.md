@@ -14,6 +14,8 @@ See [Demo XYZ extract tool](https://buildrs.github.io/xyz/)
 
 ## Publish @buildrs/xyz NPM
 ```
+# First, increase the version number in package.json to the
+# next in sequence from the current NPM version.
 > npx rollup -c
 > npm publish
 ```

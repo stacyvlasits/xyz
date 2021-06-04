@@ -5,7 +5,7 @@ import css from 'rollup-plugin-import-css';
 import pkg from './package.json';
 
 export default {
-  input: 'src/index/index.js',
+  input: 'js/index/index.js',
   output: [{
     file: pkg.module, // the name of our esm library
     format: 'esm', // the format of choice

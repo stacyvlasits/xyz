@@ -1,5 +1,5 @@
 import * as Vue from 'vue';
-import { openBlock, createBlock, createVNode, withDirectives, vModelText, vShow, createTextVNode, resolveComponent } from 'vue';
+import { pushScopeId, popScopeId, openBlock, createBlock, createVNode, withDirectives, vModelText, vShow, withScopeId, createTextVNode, resolveComponent } from 'vue';
 
 // Adapted to es6 from https://www.w3schools.com/js/js_cookies.asp.
 
@@ -68,6 +68,392 @@ function bind() {
       attr(body, 'class', 'diurnal-bright');
     } else if (cookie == 'dark') {
       attr(body, 'class', 'diurnal-dark');
+    }
+  }
+}
+
+var strictUriEncode = function (str) {
+	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+	});
+};
+
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+function encoderForArrayFormat(opts) {
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, index) {
+				return value === null ? [
+					encode(key, opts),
+					'[',
+					index,
+					']'
+				].join('') : [
+					encode(key, opts),
+					'[',
+					encode(index, opts),
+					']=',
+					encode(value, opts)
+				].join('');
+			};
+
+		case 'bracket':
+			return function (key, value) {
+				return value === null ? encode(key, opts) : [
+					encode(key, opts),
+					'[]=',
+					encode(value, opts)
+				].join('');
+			};
+
+		default:
+			return function (key, value) {
+				return value === null ? encode(key, opts) : [
+					encode(key, opts),
+					'=',
+					encode(value, opts)
+				].join('');
+			};
+	}
+}
+
+function parserForArrayFormat(opts) {
+	var result;
+
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, accumulator) {
+				result = /\[(\d*)\]$/.exec(key);
+
+				key = key.replace(/\[\d*\]$/, '');
+
+				if (!result) {
+					accumulator[key] = value;
+					return;
+				}
+
+				if (accumulator[key] === undefined) {
+					accumulator[key] = {};
+				}
+
+				accumulator[key][result[1]] = value;
+			};
+
+		case 'bracket':
+			return function (key, value, accumulator) {
+				result = /(\[\])$/.exec(key);
+				key = key.replace(/\[\]$/, '');
+
+				if (!result) {
+					accumulator[key] = value;
+					return;
+				} else if (accumulator[key] === undefined) {
+					accumulator[key] = [value];
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+
+		default:
+			return function (key, value, accumulator) {
+				if (accumulator[key] === undefined) {
+					accumulator[key] = value;
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+	}
+}
+
+function encode(value, opts) {
+	if (opts.encode) {
+		return opts.strict ? strictUriEncode(value) : encodeURIComponent(value);
+	}
+
+	return value;
+}
+
+function keysSorter(input) {
+	if (Array.isArray(input)) {
+		return input.sort();
+	} else if (typeof input === 'object') {
+		return keysSorter(Object.keys(input)).sort(function (a, b) {
+			return Number(a) - Number(b);
+		}).map(function (key) {
+			return input[key];
+		});
+	}
+
+	return input;
+}
+
+var parse = function (str, opts) {
+	opts = objectAssign({arrayFormat: 'none'}, opts);
+
+	var formatter = parserForArrayFormat(opts);
+
+	// Create an object with no prototype
+	// https://github.com/sindresorhus/query-string/issues/47
+	var ret = Object.create(null);
+
+	if (typeof str !== 'string') {
+		return ret;
+	}
+
+	str = str.trim().replace(/^(\?|#|&)/, '');
+
+	if (!str) {
+		return ret;
+	}
+
+	str.split('&').forEach(function (param) {
+		var parts = param.replace(/\+/g, ' ').split('=');
+		// Firefox (pre 40) decodes `%3D` to `=`
+		// https://github.com/sindresorhus/query-string/pull/37
+		var key = parts.shift();
+		var val = parts.length > 0 ? parts.join('=') : undefined;
+
+		// missing `=` should be `null`:
+		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+		val = val === undefined ? null : decodeURIComponent(val);
+
+		formatter(decodeURIComponent(key), val, ret);
+	});
+
+	return Object.keys(ret).sort().reduce(function (result, key) {
+		var val = ret[key];
+		if (Boolean(val) && typeof val === 'object' && !Array.isArray(val)) {
+			// Sort object keys, not values
+			result[key] = keysSorter(val);
+		} else {
+			result[key] = val;
+		}
+
+		return result;
+	}, Object.create(null));
+};
+
+var stringify = function (obj, opts) {
+	var defaults = {
+		encode: true,
+		strict: true,
+		arrayFormat: 'none'
+	};
+
+	opts = objectAssign(defaults, opts);
+
+	var formatter = encoderForArrayFormat(opts);
+
+	return obj ? Object.keys(obj).sort().map(function (key) {
+		var val = obj[key];
+
+		if (val === undefined) {
+			return '';
+		}
+
+		if (val === null) {
+			return encode(key, opts);
+		}
+
+		if (Array.isArray(val)) {
+			var result = [];
+
+			val.slice().forEach(function (val2) {
+				if (val2 === undefined) {
+					return;
+				}
+
+				result.push(formatter(key, val2, result.length));
+			});
+
+			return result.join('&');
+		}
+
+		return encode(key, opts) + '=' + encode(val, opts);
+	}).filter(function (x) {
+		return x.length > 0;
+	}).join('&') : '';
+};
+
+const hash = parse(location.hash);
+let lat = 0, lon = 0, min_lat = 0, min_lon = 0, max_lat = 0, max_lon = 0;
+if (hash) {
+  lat = parseFloat(hash.lat) || 0;
+  lon = parseFloat(hash.lon) || 0;
+  min_lat = parseFloat(hash.min_lat) || lat;
+  max_lat = parseFloat(hash.max_lat) || lat;
+  min_lon = parseFloat(hash.min_lon) || lon;
+  max_lon = parseFloat(hash.max_lon) || lon;
+  console.log(`permalink.js: lat: ${lat}, lon: ${lon}, min_lat: ${min_lat}, min_lon: ${min_lon}, max_lat: ${max_lat}, max_lon: ${min_lon}`);
+}
+
+const link = {
+  lat: lat,
+  lon: lon,
+  min_lat: min_lat,
+  max_lat: max_lat,
+  min_lon: min_lon,
+  max_lon: max_lon,
+};
+
+if (location.hash == '') {
+  const stringified = stringify(link);
+  console.log('stringified: ', stringified);
+  location.hash = stringified;
+}
+
+class Fullscreen {
+  constructor(container, cb) {
+    this.container = container;
+    // Fullscreen button, with dash border icon inset.
+    this.elt = document.createElement('div');
+    this.elt.setAttribute('class', 'fullscreen-control');
+    this.dash = document.createElement('div');
+    this.dash.setAttribute('class', 'fullscreen-dash');
+    this.elt.appendChild(this.dash);
+    this.container.appendChild(this.elt);
+    this.cb = cb;
+    this.content = container;
+    this.origPosition = this.container.style.position;
+    this.origWidth = this.container.offsetWidth;
+    this.origHeight = this.container.offsetHeight;
+    this.origMargin = this.container.style.margin;
+    this.fs = (this.origWidth == window.innerWidth
+               && this.origHeight == window.innerHeight);
+    if (this.fs) {
+      this.dash.display = 'none';
+      return;
+    }
+    this.elt.onclick = () => {
+      this.toggle();
+    };
+  }
+
+
+  isFullscreen() {
+    return this.fs;
+  }
+
+
+  makeFullscreen() {
+    if (this.isFullscreen()) {
+      return;
+    }
+    this.toggle();
+  }
+
+
+  toggle() {
+    if (this.isFullscreen()) {
+      this.container.style.position = this.origPosition;
+      this.container.style.margin = this.origMargin;
+      this.container.style.width = this.origWidth + 'px';
+      this.container.style.height = this.origHeight + 'px';
+      this.dash.setAttribute('class', 'fullscreen-dash');
+      this.fs = false;
+      if (this.cb) {
+        this.cb();
+      }
+    } else {
+      this.container.style.position = 'absolute';
+      this.container.style.margin = '0';
+      this.container.style.width = window.innerWidth + 'px';
+      this.container.style.height = window.innerHeight + 'px';
+      this.dash.setAttribute('class', 'fullscreen-dash-zoomed');
+      this.fs = true;
+      if (this.cb) {
+        this.cb();
+      }
     }
   }
 }
@@ -33418,21 +33804,20 @@ new BesselEllipsoid(deg2rad(46, 57, 8.66), deg2rad(7, 26, 22.50));
 
 var script$1 = {
   props: {
-    lat: Number,
-    lon: Number,
+    coordinate: Object
   },
   data() {
-    const [N, E] = wgs2lv95(this.lat, this.lon);
+    const [N, E] = wgs2lv95(this.coordinate.lat, this.coordinate.lon);
     return {
       dms: {
         show: true,
-        lat: deg2dms(this.lat),
-        lon: deg2dms(this.lon)
+        lat: deg2dms(this.coordinate.lat),
+        lon: deg2dms(this.coordinate.lon)
       },
       deg: {
         show: false,
-        lat: this.lat,
-        lon: this.lon
+        lat: this.coordinate.lat,
+        lon: this.coordinate.lon
       },
       lv95: {
         show: false,
@@ -33443,11 +33828,9 @@ var script$1 = {
         eMin: Number.MIN_VALUE,
         eMax: Number.MAX_VALUE,
       },
-      NSlider: 50,
-      ESlider: 50,
       coord: {
-        lat: this.lat,
-        lon: this.lon,
+        lat: this.coordinate.lat,
+        lon: this.coordinate.lon,
         latMin: Number.MIN_VALUE,
         latMax: Number.MAX_VALUE,
         lonMin: Number.MIN_VALUE,
@@ -33459,6 +33842,8 @@ var script$1 = {
     setLatLon(lat, lon) {
       this.deg.lat = lat;
       this.deg.lon = lon;
+      this.dms.lat = deg2dms(lat);
+      this.dms.lon = deg2dms(lon);
     },
     setLv95(N, E) {
       this.lv95.N = N;
@@ -33482,12 +33867,19 @@ var script$1 = {
   },
   emits: ['coord-changed'],
   watch: {
+    coordinate: {
+      handler() {
+        //console.log('CoordsForm#coordiate handler: ', this.coordinate);
+        this.setLatLon(this.coordinate.lat, this.coordinate.lon);
+      },
+      deep: true
+    },
     coord: {
       handler() {
         const c = this.coord;
         const lv = wgs2lv95(c.lat, c.lon);
         const changeEvent = {wgs:{lat: c.lat, lon: c.lon}, lv95:{N:lv[0], E:lv[1]}};
-        console.log('CoordsForm: coord changed: ', changeEvent);
+        //console.log('CoordsForm: coord changed: ', changeEvent);
         this.$root.$emit('coord-changed', changeEvent);
         this.$emit('coord-changed', changeEvent);
       },
@@ -33514,194 +33906,192 @@ var script$1 = {
       },
       deep: true
     },
-    NSlider: {
-      handler() {
-        const min = this.lv95.nMin, max = this.lv95.nMax;
-        const rangeN = this.NSlider;
-        const value = parseFloat((min + (rangeN / 100 * (max - min))).toFixed(2));
-        this.lv95.N = value;
-        [this.coord.lat, this.coord.lon] = lv952wgs(this.lv95.N, this.lv95.E);
-      }
-    },
-    ESlider: {
-      handler() {
-        const min = this.lv95.eMin, max = this.lv95.eMax;
-        const rangeE = this.ESlider;
-        const value = parseFloat((min + (rangeE / 100 * (max - min))).toFixed(2));
-        this.lv95.E = value;
-        [this.coord.lat, this.coord.lon] = lv952wgs(this.lv95.N, this.lv95.E);
-      }
-    }
   }
 };
 
-const _hoisted_1$1 = /*#__PURE__*/createVNode("option", { value: "dms" }, "Deg°/Min'/Sec\"", -1 /* HOISTED */);
-const _hoisted_2$1 = /*#__PURE__*/createVNode("option", { value: "deg" }, "Deg°", -1 /* HOISTED */);
-const _hoisted_3 = /*#__PURE__*/createVNode("option", { value: "lv95" }, "LV95", -1 /* HOISTED */);
-const _hoisted_4 = { name: "coords_dms" };
-const _hoisted_5 = /*#__PURE__*/createVNode("td", null, "Latitude:", -1 /* HOISTED */);
-const _hoisted_6 = /*#__PURE__*/createTextVNode("° ");
-const _hoisted_7 = /*#__PURE__*/createTextVNode("' ");
-const _hoisted_8 = /*#__PURE__*/createVNode("td", null, "Longitude:", -1 /* HOISTED */);
-const _hoisted_9 = /*#__PURE__*/createTextVNode("° ");
-const _hoisted_10 = /*#__PURE__*/createTextVNode("' ");
-const _hoisted_11 = { name: "coords_degrees" };
-const _hoisted_12 = /*#__PURE__*/createVNode("td", null, "Latitude:", -1 /* HOISTED */);
-const _hoisted_13 = /*#__PURE__*/createTextVNode("° N ");
-const _hoisted_14 = /*#__PURE__*/createVNode("td", null, "Longitude:", -1 /* HOISTED */);
-const _hoisted_15 = /*#__PURE__*/createTextVNode("° E ");
-const _hoisted_16 = { name: "coords_lv95" };
-const _hoisted_17 = /*#__PURE__*/createVNode("td", null, "X:", -1 /* HOISTED */);
-const _hoisted_18 = /*#__PURE__*/createVNode("td", null, "Y:", -1 /* HOISTED */);
+const _withId$1 = /*#__PURE__*/withScopeId("data-v-124a810a");
 
-function render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return (openBlock(), createBlock("div", null, [
+pushScopeId("data-v-124a810a");
+const _hoisted_1$1 = { class: "coords-forms" };
+const _hoisted_2$1 = /*#__PURE__*/createVNode("span", { style: {"width":"50pt"} }, "System:", -1 /* HOISTED */);
+const _hoisted_3$1 = /*#__PURE__*/createVNode("option", { value: "dms" }, "Deg°/Min'/Sec\"", -1 /* HOISTED */);
+const _hoisted_4$1 = /*#__PURE__*/createVNode("option", { value: "deg" }, "Deg°", -1 /* HOISTED */);
+const _hoisted_5 = /*#__PURE__*/createVNode("option", { value: "lv95" }, "LV95", -1 /* HOISTED */);
+const _hoisted_6 = {
+  name: "coords_dms",
+  class: "coord-form"
+};
+const _hoisted_7 = /*#__PURE__*/createVNode("td", null, "Latitude:", -1 /* HOISTED */);
+const _hoisted_8 = /*#__PURE__*/createTextVNode("° ");
+const _hoisted_9 = /*#__PURE__*/createTextVNode("' ");
+const _hoisted_10 = /*#__PURE__*/createTextVNode("\" ");
+const _hoisted_11 = /*#__PURE__*/createVNode("td", null, "Longitude:", -1 /* HOISTED */);
+const _hoisted_12 = /*#__PURE__*/createTextVNode("° ");
+const _hoisted_13 = /*#__PURE__*/createTextVNode("' ");
+const _hoisted_14 = /*#__PURE__*/createTextVNode("\" ");
+const _hoisted_15 = {
+  name: "coords_degrees",
+  class: "coord-form"
+};
+const _hoisted_16 = /*#__PURE__*/createVNode("td", null, "Latitude:", -1 /* HOISTED */);
+const _hoisted_17 = /*#__PURE__*/createTextVNode("° N ");
+const _hoisted_18 = /*#__PURE__*/createVNode("td", null, "Longitude:", -1 /* HOISTED */);
+const _hoisted_19 = /*#__PURE__*/createTextVNode("° E ");
+const _hoisted_20 = {
+  name: "coords_lv95",
+  class: "coord-form"
+};
+const _hoisted_21 = /*#__PURE__*/createVNode("td", null, "Latitude:", -1 /* HOISTED */);
+const _hoisted_22 = /*#__PURE__*/createTextVNode(" meters North");
+const _hoisted_23 = /*#__PURE__*/createVNode("td", null, "Longitude:", -1 /* HOISTED */);
+const _hoisted_24 = /*#__PURE__*/createTextVNode(" meters East");
+popScopeId();
+
+const render$1 = /*#__PURE__*/_withId$1((_ctx, _cache, $props, $setup, $data, $options) => {
+  return (openBlock(), createBlock("div", _hoisted_1$1, [
+    _hoisted_2$1,
     createVNode("select", {
       name: "input_format",
       onChange: _cache[1] || (_cache[1] = $event => ($options.onSelect($event.target.value)))
     }, [
-      _hoisted_1$1,
-      _hoisted_2$1,
-      _hoisted_3
+      _hoisted_3$1,
+      _hoisted_4$1,
+      _hoisted_5
     ], 32 /* HYDRATE_EVENTS */),
-    withDirectives(createVNode("form", _hoisted_4, [
+    withDirectives(createVNode("form", _hoisted_6, [
       createVNode("table", null, [
         createVNode("tr", null, [
-          _hoisted_5,
+          _hoisted_7,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[2] || (_cache[2] = $event => ($data.dms.lat.deg = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              class: "two-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lat.deg]
             ]),
-            _hoisted_6,
+            _hoisted_8,
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[3] || (_cache[3] = $event => ($data.dms.lat.min = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              size: "3",
+              class: "two-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lat.min]
             ]),
-            _hoisted_7,
+            _hoisted_9,
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[4] || (_cache[4] = $event => ($data.dms.lat.sec = $event)),
               type: "number",
-              step: "0.05"
+              step: "0.05",
+              size: "5",
+              class: "five-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lat.sec]
-            ])
+            ]),
+            _hoisted_10
           ])
         ]),
         createVNode("tr", null, [
-          _hoisted_8,
+          _hoisted_11,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[5] || (_cache[5] = $event => ($data.dms.lon.deg = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              class: "two-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lon.deg]
             ]),
-            _hoisted_9,
+            _hoisted_12,
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[6] || (_cache[6] = $event => ($data.dms.lon.min = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              class: "two-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lon.min]
             ]),
-            _hoisted_10,
+            _hoisted_13,
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[7] || (_cache[7] = $event => ($data.dms.lon.sec = $event)),
               type: "number",
-              step: "0.05"
+              step: "0.05",
+              class: "five-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.dms.lon.sec]
-            ])
+            ]),
+            _hoisted_14
           ])
         ])
       ])
     ], 512 /* NEED_PATCH */), [
       [vShow, $data.dms.show]
     ]),
-    withDirectives(createVNode("form", _hoisted_11, [
+    withDirectives(createVNode("form", _hoisted_15, [
       createVNode("table", null, [
         createVNode("tr", null, [
-          _hoisted_12,
+          _hoisted_16,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
               "onUpdate:modelValue": _cache[8] || (_cache[8] = $event => ($data.deg.lat = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              class: "ten-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.deg.lat]
             ]),
-            _hoisted_13
-          ])
-        ]),
-        createVNode("tr", null, [
-          _hoisted_14,
-          createVNode("td", null, [
-            withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[9] || (_cache[9] = $event => ($data.deg.lon = $event)),
-              type: "number",
-              step: "any"
-            }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.deg.lon]
-            ]),
-            _hoisted_15
-          ])
-        ])
-      ])
-    ], 512 /* NEED_PATCH */), [
-      [vShow, $data.deg.show]
-    ]),
-    withDirectives(createVNode("form", _hoisted_16, [
-      createVNode("table", null, [
-        createVNode("tr", null, [
-          _hoisted_17,
-          createVNode("td", null, [
-            withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[10] || (_cache[10] = $event => ($data.ESlider = $event)),
-              type: "range",
-              min: "0",
-              max: "100"
-            }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.ESlider]
-            ])
-          ]),
-          createVNode("td", null, [
-            withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[11] || (_cache[11] = $event => ($data.lv95.E = $event)),
-              type: "number",
-              step: "any"
-            }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.lv95.E]
-            ])
+            _hoisted_17
           ])
         ]),
         createVNode("tr", null, [
           _hoisted_18,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[12] || (_cache[12] = $event => ($data.NSlider = $event)),
-              type: "range",
-              min: "0",
-              max: "100"
+              "onUpdate:modelValue": _cache[9] || (_cache[9] = $event => ($data.deg.lon = $event)),
+              type: "number",
+              step: "any",
+              class: "ten-digit"
             }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.NSlider]
-            ])
-          ]),
+              [vModelText, $data.deg.lon]
+            ]),
+            _hoisted_19
+          ])
+        ])
+      ])
+    ], 512 /* NEED_PATCH */), [
+      [vShow, $data.deg.show]
+    ]),
+    withDirectives(createVNode("form", _hoisted_20, [
+      createVNode("table", null, [
+        createVNode("tr", null, [
+          _hoisted_21,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[13] || (_cache[13] = $event => ($data.lv95.N = $event)),
+              "onUpdate:modelValue": _cache[10] || (_cache[10] = $event => ($data.lv95.N = $event)),
               type: "number",
-              step: "any"
+              step: "any",
+              class: "ten-digit"
             }, null, 512 /* NEED_PATCH */), [
               [vModelText, $data.lv95.N]
-            ])
+            ]),
+            _hoisted_22
+          ])
+        ]),
+        createVNode("tr", null, [
+          _hoisted_23,
+          createVNode("td", null, [
+            withDirectives(createVNode("input", {
+              "onUpdate:modelValue": _cache[11] || (_cache[11] = $event => ($data.lv95.E = $event)),
+              type: "number",
+              step: "any",
+              class: "ten-digit"
+            }, null, 512 /* NEED_PATCH */), [
+              [vModelText, $data.lv95.E]
+            ]),
+            _hoisted_24
           ])
         ])
       ])
@@ -33709,118 +34099,119 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
       [vShow, $data.lv95.show]
     ])
   ]))
-}
+});
 
 script$1.render = render$1;
-script$1.__file = "src/coords/CoordsForm.vue";
+script$1.__scopeId = "data-v-124a810a";
+script$1.__file = "js/coords/CoordsForm.vue";
 
 var script = {
     props: {
-      latitude: Number,
-      longitude: Number,
-    },
-    data() {
-      const [N, E] = wgs2lv95(this.latitude, this.longitude);
-      return {
-        lat: this.latitude,
-        lon: this.longitude,
-        radius: 0,
-        coord: {
-          lat: this.latitude,
-          lon: this.longitude,
-          N: N,
-          E: E
-        }
-      }
+      coordinate: Object,
+      radius: Number
     },
     components: {
       'coords-form': script$1
     },
     methods: {
       setLatLon(lat, lon) {
-        this.$children[0].setLatLon(lat, lon);
+        //console.log('App.vue#setLatLon', lat, lon);
+        this.coordinate.lat = lat;
+        this.coordinate.lon = lon;
+        [this.coordinate.N, this.coordinate.E] = wgs2lv95(lat, lon);
       },
       setLv95(N, E) {
-        this.$children[0].setLv95(N, E);
+        //console.log('App.vue#setLv95', N, E);
+        this.coordinate.N = N;
+        this.coordinate.E = E;
+        [this.coordinate.lat, this.coordinate.lon] = lv952wgs(N, E);
       },
       setRadius(r) {
+        //console.log('App.vue#setRadius', r);
         this.radius = r;
-        console.log('App.vue#setRadius', r);
       },
       onLVCoord(ev) {
-        const c = this.coord;
+        //console.log('App.vue#onLVCoord: ', ev);
+        const c = this.coordinate;
         [c.lat, c.lon, c.N, c.E] = [ev.wgs.lat, ev.wgs.lon, ev.lv95.N, ev.lv95.E];
-        console.log('App.vue#onLVCoord: ', c);
+        //console.log('App.vue#onLVCoord: ', c);
       }
     },
     watch: {
-      coord: {
+      coordinate: {
         handler() {
-          console.log('App.vue#watch.coord: ', this.coord);
+          //console.log('App.vue#watch.coordinate: ', this.coordinate);
           this.$emit('coord-radius-change',
-                     {coord: this.coord, radius: parseFloat(this.radius)});
+                     {coordinate: this.coordinate, radius: parseFloat(this.radius)});
         },
         deep: true
       },
       radius: {
         handler() {
-          console.log('App.vue#watch.radius: ', this.radius);
+          //console.log('App.vue#watch.radius: ', this.radius);
           this.$emit('coord-radius-change',
-                     {coord: this.coord, radius: parseFloat(this.radius)});
+                     {coordinate: this.coordinate, radius: parseFloat(this.radius)});
         }
       }
     }
   };
 
-const _hoisted_1 = /*#__PURE__*/createVNode("td", null, "Radius:", -1 /* HOISTED */);
-const _hoisted_2 = /*#__PURE__*/createVNode("a", {
+const _withId = /*#__PURE__*/withScopeId("data-v-1cbcbd8c");
+
+pushScopeId("data-v-1cbcbd8c");
+const _hoisted_1 = { class: "coords-radius-form" };
+const _hoisted_2 = /*#__PURE__*/createVNode("td", null, "Radius:", -1 /* HOISTED */);
+const _hoisted_3 = /*#__PURE__*/createTextVNode(" meters");
+const _hoisted_4 = /*#__PURE__*/createVNode("a", {
   id: "dlbtn",
   class: "button",
   download: "extract.xyz"
 }, "Download", -1 /* HOISTED */);
+popScopeId();
 
-function render(_ctx, _cache, $props, $setup, $data, $options) {
+const render = /*#__PURE__*/_withId((_ctx, _cache, $props, $setup, $data, $options) => {
   const _component_coords_form = resolveComponent("coords-form");
 
-  return (openBlock(), createBlock("div", null, [
+  return (openBlock(), createBlock("div", _hoisted_1, [
     createVNode(_component_coords_form, {
-      lat: $data.lat,
-      lon: $data.lon,
+      coordinate: $props.coordinate,
       onCoordChanged: $options.onLVCoord
-    }, null, 8 /* PROPS */, ["lat", "lon", "onCoordChanged"]),
+    }, null, 8 /* PROPS */, ["coordinate", "onCoordChanged"]),
     createVNode("form", null, [
       createVNode("table", null, [
         createVNode("tr", null, [
-          _hoisted_1,
+          _hoisted_2,
           createVNode("td", null, [
             withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[1] || (_cache[1] = $event => ($data.radius = $event)),
+              "onUpdate:modelValue": _cache[1] || (_cache[1] = $event => ($props.radius = $event)),
               type: "range",
               min: "0",
               max: "100",
               step: "0.5"
             }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.radius]
+              [vModelText, $props.radius]
             ])
           ]),
           createVNode("td", null, [
             withDirectives(createVNode("input", {
-              "onUpdate:modelValue": _cache[2] || (_cache[2] = $event => ($data.radius = $event)),
+              "onUpdate:modelValue": _cache[2] || (_cache[2] = $event => ($props.radius = $event)),
               type: "number",
               step: "0.5"
             }, null, 512 /* NEED_PATCH */), [
-              [vModelText, $data.radius]
-            ])
+              [vModelText, $props.radius]
+            ]),
+            _hoisted_3
           ])
         ])
       ]),
-      _hoisted_2
+      _hoisted_4
     ])
   ]))
-}
+});
 
 script.render = render;
-script.__file = "src/index/App.vue";
+script.__scopeId = "data-v-1cbcbd8c";
+script.__file = "js/index/App.vue";
 
 class FileLoaderControl {
   constructor(fileLoaderElt, loadCb) {
@@ -35140,72 +35531,6 @@ var MapControls = function ( object, domElement ) {
 MapControls.prototype = Object.create( EventDispatcher.prototype );
 MapControls.prototype.constructor = MapControls;
 
-class Fullscreen {
-  constructor(container, cb) {
-    this.container = container;
-    // Fullscreen button, with dash border icon inset.
-    this.elt = document.createElement('div');
-    this.elt.setAttribute('class', 'fullscreen-control');
-    this.dash = document.createElement('div');
-    this.dash.setAttribute('class', 'fullscreen-dash');
-    this.elt.appendChild(this.dash);
-    this.container.appendChild(this.elt);
-    this.cb = cb;
-    this.content = container;
-    this.origPosition = this.container.style.position;
-    this.origWidth = this.container.offsetWidth;
-    this.origHeight = this.container.offsetHeight;
-    this.origMargin = this.container.style.margin;
-    this.fs = (this.origWidth == window.innerWidth
-               && this.origHeight == window.innerHeight);
-    if (this.fs) {
-      this.dash.display = 'none';
-      return;
-    }
-    this.elt.onclick = () => {
-      this.toggle();
-    };
-  }
-
-
-  isFullscreen() {
-    return this.fs;
-  }
-
-
-  makeFullscreen() {
-    if (this.isFullscreen()) {
-      return;
-    }
-    this.toggle();
-  }
-
-
-  toggle() {
-    if (this.isFullscreen()) {
-      this.container.style.position = this.origPosition;
-      this.container.style.margin = this.origMargin;
-      this.container.style.width = this.origWidth + 'px';
-      this.container.style.height = this.origHeight + 'px';
-      this.dash.setAttribute('class', 'fullscreen-dash');
-      this.fs = false;
-      if (this.cb) {
-        this.cb();
-      }
-    } else {
-      this.container.style.position = 'absolute';
-      this.container.style.margin = '0';
-      this.container.style.width = window.innerWidth + 'px';
-      this.container.style.height = window.innerHeight + 'px';
-      this.dash.setAttribute('class', 'fullscreen-dash-zoomed');
-      this.fs = true;
-      if (this.cb) {
-        this.cb();
-      }
-    }
-  }
-}
-
 class XYZArray {
   constructor(sourceArray) {
     if (sourceArray.length < 3 || sourceArray.length % 3 != 0) {
@@ -35269,6 +35594,10 @@ class XYZObject extends Object3D {
     super();
     this.origArr = [...geometry.attributes.position.array];
     this.srcArr = new XYZArray(this.origArr);
+    if (isNaN(this.origArr[0])) {
+      console.log(this.origArr, this.srcArr);
+      throw new Error('Bogus data in source geometry.. found NaNs');
+    }
     const sourceBounds = new Box3;
     geometry.computeBoundingBox();
     sourceBounds.copy(geometry.boundingBox);
@@ -35442,6 +35771,10 @@ class View extends Scene {
   }
 
 
+
+  /**
+   * @param zoomBoundsIn The active zoom in world coordinates (LV95).
+   */
   focus(zoomBoundsIn) {
     if (zoomBoundsIn == null) {
       throw new Error('zoomBoundsIn null');
@@ -35450,9 +35783,11 @@ class View extends Scene {
       min: { x: zoomBoundsIn.Xmin, y: zoomBoundsIn.Ymin },
       max: { x: zoomBoundsIn.Xmax, y: zoomBoundsIn.Ymax }
     };
+    // Source bounds in world coordinates (LV95).
     const sourceBounds = this.xyzObj.children[0].sourceBounds;
     const sourceWidth = sourceBounds.max.x - sourceBounds.min.x;
     const sourceDepth = sourceBounds.max.y - sourceBounds.min.y;
+    // View bounds in scaled scene coordinates (webgl units).
     const viewBounds = this.xyzObj.children[0].viewBounds;
     const viewWidth = viewBounds.max.x - viewBounds.min.x;
     const viewDepth = viewBounds.max.y - viewBounds.min.y;
@@ -35465,6 +35800,7 @@ class View extends Scene {
     const ZOOM_EXTRA = 1;
     const zoomHeight = viewBounds.max.z - viewBounds.min.z + ZOOM_EXTRA;
     const boxX = zoomX - sourceBounds.min.x;
+    //console.log(`zoomX(${zoomX}) - sourceBounds.min.x(${sourceBounds.min.x})`);
     const boxY = zoomY - sourceBounds.min.y;
     const boxWidth = zoomWidth / sourceWidth * viewWidth;
     const boxHeight = zoomHeight;
@@ -35490,7 +35826,7 @@ class View extends Scene {
     // Note y swapped to z.
     box.position.z = -viewYOff - boxY - boxDepth + (boxDepth / 2);
     box.position.y -= (ZOOM_EXTRA / 2);
-     console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`);
+    // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth})`);
     // console.log(`box(x: ${boxX} y:${boxY} w:${boxWidth} h:${boxHeight} d:${boxDepth}) zoomX:${zoomX}`,
     //            b2s('source', sourceBounds), b2s('view', viewBounds), b2s('zoom', zoomBounds),
     //            box.position);
@@ -35524,51 +35860,76 @@ class View extends Scene {
 }
 
 bind();
+new Fullscreen(document.getElementById('view'));
+
+console.log('permalink in extract/index: ', link);
 
 let sc;
 const view = new View();
-const TEST = Vue.ref({a:1});
-const bern = { lat: 46.951082773, lng: 7.438632421 };
+let comp;
 const app = Vue.createApp({
   components: {
-    'here': script
+    'extract-tool': script,
   },
   data() {
-    return {
-      latitude: bern.lat,
-      longitude: bern.lng,
-      radius: 0,
-      test: TEST
-    }
+    const d = {
+      coordinate: {
+        lat: link.lat,
+        lon: link.lon,
+        N: link.lat, // todo: convert
+        E: link.lon,
+      },
+      min: {
+        lat: link.min_lat,
+        lon: link.min_lon
+      },
+      max: {
+        lat: link.max_lat,
+        lon: link.max_lon
+      }
+    };
+    //console.log('extract/index.js#data:', d);
+    return d;
+  },
+  created() {
+    //console.log(`created: ${this.coordinate}`);
+    comp = this;
+    window.comp = comp;
   },
   methods: {
-    init(N, E, R) {
-      const c = this.$children[0];
-      c.setLv95(N, E);
-      c.setRadius(10);
-      console.log('index.js#init', N, E, R);
+    setCoord(N, E, R) {
+      //console.log('extract/index.js#setCoord', this.coordinate, this.min, this.max);
+      /*
+      this.coordinate.N = N;
+      this.coordinate.E = E;
+      [this.coordinate.lat, this.coordinate.lon] = lv952wgs(N, E);
+      */
+      console.log('index.js#init', this.coordinate, this.min, this.max);
+      this.onCoordBounds({coordinate: this.coordinate, min: this.min, max: this.max});
     },
-    onCoordRadiusChange(event) {
-      const c = event.coord, r = event.radius;
-      console.log(`coord-radius-change: wgs(${c.lat},${c.lon}) lv(${c.N},${c.E}) r(${r})`);
+    onCoordBounds(event) {
+      const min = event.min, max = event.max;
+      const lv95min = wgs2lv95(min.lat, min.lon);
+      const lv95max = wgs2lv95(max.lat, max.lon);
+      console.log(`coord-bounds-change: `, lv95min, lv95max);
       const zoom = {
-        Xmin: c.E - r,
-        Xmax: c.E + r,
-        Ymin: c.N - r,
-        Ymax: c.N + r,
+        Xmin: lv95min[1],
+        Xmax: lv95max[1],
+        Ymin: lv95min[0],
+        Ymax: lv95max[0],
       };
-      console.log('zoom', zoom);
+      console.log('extract/index.js:calling zoom: ', zoom);
       view.focus(zoom);
       sc.processBounds(zoom, document.getElementById('dlbtn'));
     },
   },
   watch: {
-    test: {
+    coord: {
       handler() {
-        console.log('test: ', this.test);
+        console.log('extract/index.js#coord handler', this.coordinate);
       },
       deep: true
-    }
+    },
   }
 });
 app.mount('#app');
@@ -35578,20 +35939,22 @@ const display = geometry => {
   const obj = new XYZObject(geometry);
   view.displayXYZObject(obj);
   const bounds = obj.shape.sourceBounds;
-  bounds.min.y + (bounds.max.y - bounds.min.y) / 2;
-  bounds.min.x + (bounds.max.x - bounds.min.x) / 2;
-  console.log('index.js#display...');
-  TEST.a = 2;
   sc = new SelectionControl(obj, obj.shape.sourceBounds, obj.shape.viewBounds, zoom => {
-    view.focus(zoom);
+    //view.focus(zoom);
   });
+  if (comp) {
+    const N = bounds.min.y + (bounds.max.y - bounds.min.y) / 2;
+    const E = bounds.min.x + (bounds.max.x - bounds.min.x) / 2;
+    //console.log(comp, bounds, N, E);
+    comp.setCoord(N, E, 1);
+  }
 };
 
 
 const selectElt = document.querySelector("select[name='sources']");
 selectElt.addEventListener('change', () => {
     new XYZLoader().load(selectElt.value, display);
-  });
+});
 new XYZLoader().load(selectElt.value, display);
 
 const fileLoaderElt = document.getElementById('fileLoader');
