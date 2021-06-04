@@ -1,8 +1,8 @@
 <template>
   <div class="bounds-forms">
-    <h3>Min</h3>
+    <h3>Min Coordindate</h3>
     <coords-form :coordinate="min" @coord-changed="onMin"></coords-form>
-    <h3>Max</h3>
+    <h3>Max Coordindate</h3>
     <coords-form :coordinate="max" @coord-changed="onMax"></coords-form>
   </div>
 </template>
@@ -56,7 +56,7 @@ export default {
       this.bounds.min.wgs.lon = ev.wgs.lon;
       this.bounds.min.lv95.N = ev.lv95.N;
       this.bounds.min.lv95.E = ev.lv95.E;
-      console.log(`BoundsForm#onMin: ${this.bounds.min.wgs.lat}`, this.bounds);
+      //console.log(`BoundsForm#onMin: ${this.bounds.min.wgs.lat}`, this.bounds);
       this.$emit('bounds-changed', this.bounds);
     },
     onMax(ev) {

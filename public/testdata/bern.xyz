@@ -1,0 +1,5 @@
+# Clockwise 100m square, Bern zero at first coordinate.
+2600000 1200000 1
+2600000 1200100 1
+2600100 1200100 1
+2600100 1200000 1

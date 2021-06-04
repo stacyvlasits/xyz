@@ -29,16 +29,25 @@ const app = Vue.createApp({
         E: bern.E,
       },
       min: {
+        lat: bern.lat,
+        lon: bern.lng,
+        N: bern.N,
+        E: bern.E,
+        /*
         lat: 0,
         lon: 0,
         N: 0,
-        E: 0,
+        E: 0,*/
       },
       max: {
+        lat: bern.lat,
+        lon: bern.lng,
+        N: bern.N,
+        E: bern.E,/*
         lat: 0,
         lon: 0,
         N: 0,
-        E: 0,
+        E: 0,*/
       },
       pri_coordinate: {
         lat: bern.lat,
@@ -47,16 +56,24 @@ const app = Vue.createApp({
         E: bern.E,
       },
       pri_min: {
+        lat: bern.lat,
+        lon: bern.lng,
+        N: bern.N,
+        E: bern.E,/*
         lat: 0,
         lon: 0,
         N: 0,
-        E: 0,
+        E: 0,*/
       },
       pri_max: {
+        lat: bern.lat,
+        lon: bern.lng,
+        N: bern.N,
+        E: bern.E,/*
         lat: 0,
         lon: 0,
         N: 0,
-        E: 0,
+        E: 0,*/
       },
       pri_altitude: 0,
       pri_northing: 0

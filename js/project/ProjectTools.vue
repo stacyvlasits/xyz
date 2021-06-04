@@ -1,13 +1,15 @@
 <template>
-<h2>ArchiCAD Project</h2>
-  Initial project file
-<button ref="dlBtn" v-on:click="onClick">Download</button><br/>
-<p/>Preview:
+<h2>XYZ extract tool</h2>
+Visit: <a target="_new" v-bind:href="'http://localhost:8080/extract#lat=' + coordinate.lat + '&lon=' + coordinate.lon + '&min_lat=' + min.lat + '&min_lon=' + min.lon + '&max_lat=' + max.lat + '&max_lon=' + max.lon">lat: {{ coordinate.lat }} lon: {{ coordinate.lon}} min: {{min.lat}} {{min.lon}} max: {{max.lat}} {{max.lon}}</a><br/>
 <!--  Crd lat: {{coordinate.lat}}, lon: {{coordinate.lon}}, N: {{coordinate.N}}, E: {{coordinate.E}}<br/>
   Min lat: {{min.lat}}, lon: {{min.lon}}, N: {{min.N}}, E: {{min.E}}<br/>
   Max lat: {{max.lat}}, lon: {{max.lon}}, N: {{max.N}}, E: {{max.E}}<br/>
   Altitude: {{altitude}},
   Northing: {{northing}}-->
+<h2>ArchiCAD Project</h2>
+  Initial project file
+<button ref="dlBtn" v-on:click="onClick">Download</button><br/>
+<p/>Preview:
   <div ref="xmlDisplay"></div>
 </template>
 <script>
@@ -27,8 +29,11 @@ export default {
     return {}
   },
   setup() {
+    //console.log('ProjectTools: ', this.coordinate);
     const dlBtn = ref(null);
     const xmlDisplay = ref(null);
+    //this.min.lat = this.max.lat = this.coordinate.lat;
+    //this.min.lon = this.max.lon = this.coordinate.lon;
     return {
       dlBtn, xmlDisplay
     }

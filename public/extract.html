@@ -13,6 +13,7 @@
       <h2>Data Source</h2>
       <label for="area">Choose an area:</label>
       <select name="sources">
+        <option value="testdata/bern.xyz">Bern Square (sample)</option>
         <option value="testdata/zurich-sample.xyz">Canton Zürich (sample)</option>
         <option value="testdata/DTM_GRID_XYZ.xyz">Astra</option>
 <!--        <option value="testdata/test.xyz">Test points</option> -->
@@ -21,9 +22,9 @@
         Or upload your own: <input id="fileLoader" type="file" accept=".xyz">
       </form>
       <h2>Project data</h2>
-      <h3>by reference point</h3>
       <div id="app">
-        <router-view></router-view>
+        <extract-tool :coordinate="coordinate" :min="min" :max="max"
+                      @coord-bounds-change="onCoordBounds"></extract-tool>
       </div>
     </div>
   </body>

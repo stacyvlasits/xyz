@@ -1,8 +1,9 @@
 module.exports = {
   pages: {
     index: 'js/index/index.js',
-    coords: 'js/coords/main.js',
-    project: 'js/project/main.js'
+    project: 'js/project/main.js',
+    extract: 'js/extract/index.js',
+    coords: 'js/coords/main.js'
   },
   outputDir: 'docs',
   runtimeCompiler: true,
