@@ -10,6 +10,8 @@ See [Demo XYZ extract tool](https://buildrs.github.io/xyz/)
 ## Build (demo)
 ```
 > npm run build
+# Push to demo site:
+> git add . ; git ci -m 'Pushing version x.x.x' ; git push
 ```
 
 ## Publish @buildrs/xyz NPM
