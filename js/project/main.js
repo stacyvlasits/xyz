@@ -1,4 +1,5 @@
 import * as Vue from 'vue';
+import Permalink from '../permalink.js';
 import {wgs2lv95, System} from '../coords/coords.js';
 import BoundsForm from '../bounds/BoundsForm.vue';
 import CoordsForm from '../coords/CoordsForm.vue';
@@ -13,7 +14,12 @@ let map, marker, boundsRect;
 const bern = { lat: 46.951082773, lon: 7.438632421, system: System.WGS84 };
 //[bern.N, bern.E] = wgs2lv95(bern.lat, bern.lon);
 //const bern = { lat: 1200000, lon: 2600000, system: System.LV95 };
-const center = bern;
+console.log('permalink in project/main.js: ', Permalink);
+const center = {
+  lat: Permalink.lat || bern.lat,
+  lon: Permalink.lon || bern.lon,
+  system: Permalink.system || bern.system
+};
 
 function clone(obj) {
   return Object.assign({}, obj);

@@ -1,4 +1,6 @@
 <template>
+<h2>Permalink for this page</h2>
+Visit: <a target="_new" v-bind:href="servePath + '/project#lat=' + coordinate.lat + '&lon=' + coordinate.lon + '&min_lat=' + min.lat + '&min_lon=' + min.lon + '&max_lat=' + max.lat + '&max_lon=' + max.lon">lat: {{ coordinate.lat }} lon: {{ coordinate.lon}} min: {{min.lat}} {{min.lon}} max: {{max.lat}} {{max.lon}}</a><br/>
 <h2>XYZ extract tool</h2>
 Visit: <a target="_new" v-bind:href="servePath + '/extract#lat=' + coordinate.lat + '&lon=' + coordinate.lon + '&min_lat=' + min.lat + '&min_lon=' + min.lon + '&max_lat=' + max.lat + '&max_lon=' + max.lon">lat: {{ coordinate.lat }} lon: {{ coordinate.lon}} min: {{min.lat}} {{min.lon}} max: {{max.lat}} {{max.lon}}</a><br/>
 <!--  Crd lat: {{coordinate.lat}}, lon: {{coordinate.lon}}, N: {{coordinate.N}}, E: {{coordinate.E}}<br/>
