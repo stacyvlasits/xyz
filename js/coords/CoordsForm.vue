@@ -61,6 +61,22 @@ import {dms2deg, wgs2lv95, lv952wgs, deg2dms, System} from './coords.js';
 import {assertDefined,assertEquals} from '@pablo-mayrgundter/testing.js/testing.js';
 
 
+function parseFloatOrZero(str) {
+  const val = parseFloat(str);
+  return Number.isFinite(val) ? val : 0;
+}
+
+
+function getOrClear(obj, field) {
+  const str = obj[field];
+  const val = parseFloatOrZero(str);
+  if (val == 0) {
+    obj[field] = '0';
+  } else {
+    return val;
+  }
+}
+
 export default {
   props: {
     coordinate: Object
@@ -159,26 +175,26 @@ export default {
     dms: {
       handler() {
         const dms = this.dms;
-        this.coord.lat = dms2deg(parseFloat(dms.lat.deg), parseFloat(dms.lat.min), parseFloat(dms.lat.sec));
-        this.coord.lon = dms2deg(parseFloat(dms.lon.deg), parseFloat(dms.lon.min), parseFloat(dms.lon.sec));
+        this.coord.lat = dms2deg(getOrClear(dms.lat, 'deg'), getOrClear(dms.lat, 'min'), getOrClear(dms.lat, 'sec'));
+        this.coord.lon = dms2deg(getOrClear(dms.lon, 'deg'), getOrClear(dms.lon, 'min'), getOrClear(dms.lon, 'sec'));
         this.originalCoordinate = null;
       },
       deep: true
     },
     deg: {
       handler() {
-        this.coord.lat = dms2deg(parseFloat(this.deg.lat));
-        this.coord.lon = dms2deg(parseFloat(this.deg.lon));
+        this.coord.lat = dms2deg(getOrClear(this.deg, 'lat'));
+        this.coord.lon = dms2deg(getOrClear(this.deg, 'lon'));
         this.originalCoordinate = null;
       },
       deep: true
     },
     lv95: {
       handler() {
-        [this.coord.lat, this.coord.lon] = lv952wgs(parseFloat(this.lv95.N), parseFloat(this.lv95.E));
+        [this.coord.lat, this.coord.lon] = lv952wgs(getOrClear(this.lv95, 'N'), getOrClear(this.lv95, 'E'));
         this.originalCoordinate = {
-          lat: parseFloat(this.lv95.N),
-          lon: parseFloat(this.lv95.E),
+          lat: getOrClear(this.lv95, 'N'),
+          lon: getOrClear(this.lv95, 'E'),
           system: System.LV95
         };
       },

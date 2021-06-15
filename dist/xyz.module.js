@@ -42176,11 +42176,14 @@ var script$1 = {
         WGS84_DEG: System.WGS84 + '-deg',
         LV95: System.LV95
       },
-      show: System.WGS84 + '-dms', // can't use this.types
+      show: System.LV95 //System.WGS84 + '-dms', // can't use this.types
     }
   },
   methods: {
     getCoord() {
+      if (this.originalCoordinate) {
+        this.coord.originalCoordinate = this.originalCoordinate;
+      }
       return this.coord;
     },
     onSelect(value) {
@@ -42239,8 +42242,8 @@ var script$1 = {
       handler() {
         [this.coord.lat, this.coord.lon] = lv952wgs(parseFloat(this.lv95.N), parseFloat(this.lv95.E));
         this.originalCoordinate = {
-          lat: this.lv95.N,
-          lon: this.lv95.E,
+          lat: parseFloat(this.lv95.N),
+          lon: parseFloat(this.lv95.E),
           system: System.LV95
         };
       },
@@ -42292,14 +42295,14 @@ const render$1 = /*#__PURE__*/_withId$1((_ctx, _cache, $props, $setup, $data, $o
       onChange: _cache[1] || (_cache[1] = $event => ($options.onSelect($event.target.value)))
     }, [
       createVNode("option", {
+        value: $data.types.LV95
+      }, "LV95", 8 /* PROPS */, ["value"]),
+      createVNode("option", {
         value: $data.types.WGS84_DMS
       }, "Deg°/Min'/Sec\"", 8 /* PROPS */, ["value"]),
       createVNode("option", {
         value: $data.types.WGS84_DEG
-      }, "Deg°", 8 /* PROPS */, ["value"]),
-      createVNode("option", {
-        value: $data.types.LV95
-      }, "LV95", 8 /* PROPS */, ["value"])
+      }, "Deg°", 8 /* PROPS */, ["value"])
     ], 32 /* HYDRATE_EVENTS */),
     withDirectives(createVNode("form", _hoisted_3$1, [
       createVNode("table", null, [

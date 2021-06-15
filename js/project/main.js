@@ -14,7 +14,7 @@ let map, marker, boundsRect;
 const bern = { lat: 46.951082773, lon: 7.438632421, system: System.WGS84 };
 //[bern.N, bern.E] = wgs2lv95(bern.lat, bern.lon);
 //const bern = { lat: 1200000, lon: 2600000, system: System.LV95 };
-console.log('permalink in project/main.js: ', Permalink);
+//console.log('permalink in project/main.js: ', Permalink);
 const center = {
   lat: Permalink.lat || bern.lat,
   lon: Permalink.lon || bern.lon,
@@ -26,7 +26,6 @@ function clone(obj) {
 }
 
 let displayCoord, gCoord;
-let firstTime = true;
 const app = Vue.createApp({
   components: {
     'coords-form': CoordsForm,
@@ -36,18 +35,45 @@ const app = Vue.createApp({
   data() {
     return {
       coordinate: clone(center),
-      min: clone(center),
-      max: clone(center),
+      min: {
+        lat: Permalink.min_lat || bern.lat,
+        lon: Permalink.min_lon || bern.lon,
+        system: center.system
+      },
+      max: {
+        lat: Permalink.max_lat || bern.lat,
+        lon: Permalink.max_lon || bern.lon,
+        system: center.system
+      },
       pri_coordinate: clone(center),
-      pri_min: clone(center),
-      pri_max: clone(center),
+      pri_min: {
+        lat: Permalink.min_lat || bern.lat,
+        lon: Permalink.min_lon || bern.lon,
+      },
+      pri_max: {
+        lat: Permalink.max_lat || bern.lat,
+        lon: Permalink.max_lon || bern.lon,
+      },
       pri_altitude: 0,
       pri_northing: 0
     }
-  },
+  },/*
+  created() {
+    console.log(`project/main.js: min.lat: ${this.min.lat}, `
+                + `min.lon: ${this.min.lon}, `
+                + `max.lat: ${this.max.lat}, `
+                + `max.lon: ${this.max.lon}, `
+                + `pri_min.lat: ${this.pri_min.lat}, `
+                + `pri_min.lon: ${this.pri_min.lon}, `
+                + `pri_max.lat: ${this.pri_max.lat}, `
+                + `pri_max.lon: ${this.pri_max.lon}`);
+  },*/
   methods: {
+    getBounds() {
+      return {min: this.pri_min, max: this.pri_max};
+    },
     onCoordChanged(ev) {
-      //console.log('project/main.js#onCoordChanged', ev.lat, ev.lon);
+      //console.error('project/main.js#onCoordChanged', ev.lat, ev.lon);
       displayCoord = vm.$refs.coords_form.getCoord();
       this.pri_coordinate.lat = ev.lat;
       this.pri_coordinate.lon = ev.lon;
@@ -56,20 +82,9 @@ const app = Vue.createApp({
       }
       gCoord = {lat: displayCoord.lat, lng: displayCoord.lon};
       centerMap(gCoord.lat, gCoord.lng);
-      //if (firstTime) {
-        this.min.lat = ev.lat;
-        this.min.lon = ev.lon;
-        this.max.lat = ev.lat;
-        this.max.lon = ev.lon;
-        this.pri_min.lat = ev.lat;
-        this.pri_min.lon = ev.lon;
-        this.pri_max.lat = ev.lat;
-        this.pri_max.lon = ev.lon;
-    //}
     },
     onBounds(ev) {
-      //firstTime = false;
-      //console.log('project/main.js#onBounds', ev);
+      //console.error('project/main.js#onBounds', ev);
       this.pri_min.lat = ev.min.lat;
       this.pri_min.lon = ev.min.lon;
       this.pri_max.lat = ev.max.lat;
@@ -81,32 +96,7 @@ const app = Vue.createApp({
                   + `pri_max.lat: ${this.pri_max.lat}, `
                   + `pri_max.lon: ${this.pri_max.lon}`);
       */
-      const boxCoords = [
-        { lat: this.pri_min.lat, lon: this.pri_min.lon },
-        { lat: this.pri_min.lat, lon: this.pri_max.lon },
-        { lat: this.pri_max.lat, lon: this.pri_max.lon },
-        { lat: this.pri_max.lat, lon: this.pri_min.lon },
-        { lat: this.pri_min.lat, lon: this.pri_min.lon },
-      ];
-      if (boundsRect) {
-        boundsRect.setMap(null);
-      }
-      boundsRect = new google.maps.Rectangle({
-        paths: boxCoords,
-        strokeColor: "#000000",
-        strokeOpacity: 1.0,
-        strokeWeight: 3,
-        map,
-        bounds: {
-          north: this.pri_max.lat,
-          south: this.pri_min.lat,
-          east: this.pri_max.lon,
-          west: this.pri_min.lon,
-        }
-      });
-      boundsRect.setMap(map);
-      //console.log(map, boundsRect);
-      //console.log('project/main.js#onBounds message received', this.pri_min, this.pri_max);
+      drawBoundingBox(this.getBounds());
     }
   }
 });
@@ -128,6 +118,7 @@ window.initMap = () => {
     map: map,
     position: gCoord
   });
+  drawBoundingBox(vm.getBounds());
 };
 
 
@@ -138,4 +129,35 @@ function centerMap(lat, lon) {
     marker.setPosition(new google.maps.LatLng(lat, lon));
     map.panTo(new google.maps.LatLng(lat, lon));
   }
+}
+
+
+function drawBoundingBox(bounds) {
+  const [min, max] = [bounds.min, bounds.max];
+  const boxCoords = [
+    { lat: min.lat, lon: min.lon },
+    { lat: min.lat, lon: max.lon },
+    { lat: max.lat, lon: max.lon },
+    { lat: max.lat, lon: min.lon },
+    { lat: min.lat, lon: min.lon },
+  ];
+  if (boundsRect) {
+    boundsRect.setMap(null);
+  }
+  boundsRect = new google.maps.Rectangle({
+    paths: boxCoords,
+    strokeColor: "#000000",
+    strokeOpacity: 1.0,
+    strokeWeight: 3,
+    map,
+    bounds: {
+      north: max.lat,
+      south: min.lat,
+      east: max.lon,
+      west: min.lon,
+    }
+  });
+  boundsRect.setMap(map);
+  //console.log(map, boundsRect);
+  //console.log('project/main.js#onBounds message received', min, max);
 }

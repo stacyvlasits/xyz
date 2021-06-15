@@ -20,9 +20,6 @@ export default {
   components: {
     'coords-form': CoordsForm
   },
-  created() {
-    console.log(`created, min:`, this.min);
-  },
   data() {
     return {
       bounds: {
@@ -36,7 +33,13 @@ export default {
         },
       }
     }
-  },
+  },/*
+  created() {
+    console.log(`BoundsForm: min.lat: ${this.min.lat}, `
+                + `min.lon: ${this.min.lon}, `
+                + `max.lat: ${this.max.lat}, `
+                + `max.lon: ${this.max.lon}`);
+  },*/
   methods: {
     onMin(ev) {
       assertInRange(ev.lat, -360, 360);

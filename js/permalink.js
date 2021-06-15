@@ -10,7 +10,7 @@ if (hash) {
   max_lat = parseFloat(hash.max_lat) || lat;
   min_lon = parseFloat(hash.min_lon) || lon;
   max_lon = parseFloat(hash.max_lon) || lon;
-  console.log(`permalink.js: lat: ${lat}, lon: ${lon}, min_lat: ${min_lat}, min_lon: ${min_lon}, max_lat: ${max_lat}, max_lon: ${min_lon}`);
+  //console.log(`permalink.js: lat: ${lat}, lon: ${lon}, min_lat: ${min_lat}, min_lon: ${min_lon}, max_lat: ${max_lat}, max_lon: ${min_lon}`);
 }
 
 const link = {
@@ -24,8 +24,8 @@ const link = {
 
 if (location.hash == '') {
   const stringified = queryString.stringify(link);
-  console.log('stringified: ', stringified);
-  location.hash = stringified;
+  //console.log('stringified: ', stringified);
+  //location.hash = stringified;
 }
 
 export default link;
