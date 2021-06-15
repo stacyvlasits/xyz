@@ -9,16 +9,16 @@ See [Demo XYZ extract tool](https://buildrs.github.io/xyz/)
 
 ## Build (demo)
 ```
+# First, increase the version number in package.json to the
+# next in sequence from the current NPM version.
 > npm run build
+> npx rollup -c
 # Push to demo site:
 > git add . ; git ci -m 'Pushing version x.x.x' ; git push
 ```
 
 ## Publish @buildrs/xyz NPM
 ```
-# First, increase the version number in package.json to the
-# next in sequence from the current NPM version.
-> npx rollup -c
 > npm publish
 ```
 
