@@ -374,7 +374,7 @@ if (hash) {
   max_lat = parseFloat(hash.max_lat) || lat;
   min_lon = parseFloat(hash.min_lon) || lon;
   max_lon = parseFloat(hash.max_lon) || lon;
-  console.log(`permalink.js: lat: ${lat}, lon: ${lon}, min_lat: ${min_lat}, min_lon: ${min_lon}, max_lat: ${max_lat}, max_lon: ${min_lon}`);
+  //console.log(`permalink.js: lat: ${lat}, lon: ${lon}, min_lat: ${min_lat}, min_lon: ${min_lon}, max_lat: ${max_lat}, max_lon: ${min_lon}`);
 }
 
 const link = {
@@ -387,9 +387,9 @@ const link = {
 };
 
 if (location.hash == '') {
-  const stringified = stringify(link);
-  console.log('stringified: ', stringified);
-  location.hash = stringified;
+  stringify(link);
+  //console.log('stringified: ', stringified);
+  //location.hash = stringified;
 }
 
 class Fullscreen {
@@ -42126,6 +42126,22 @@ function assertEquals(expected, actual, msg) {
   return actual;
 }
 
+function parseFloatOrZero(str) {
+  const val = parseFloat(str);
+  return Number.isFinite(val) ? val : 0;
+}
+
+
+function getOrClear(obj, field) {
+  const str = obj[field];
+  const val = parseFloatOrZero(str);
+  if (val == 0) {
+    obj[field] = '0';
+  } else {
+    return val;
+  }
+}
+
 var script$1 = {
   props: {
     coordinate: Object
@@ -42224,26 +42240,26 @@ var script$1 = {
     dms: {
       handler() {
         const dms = this.dms;
-        this.coord.lat = dms2deg(parseFloat(dms.lat.deg), parseFloat(dms.lat.min), parseFloat(dms.lat.sec));
-        this.coord.lon = dms2deg(parseFloat(dms.lon.deg), parseFloat(dms.lon.min), parseFloat(dms.lon.sec));
+        this.coord.lat = dms2deg(getOrClear(dms.lat, 'deg'), getOrClear(dms.lat, 'min'), getOrClear(dms.lat, 'sec'));
+        this.coord.lon = dms2deg(getOrClear(dms.lon, 'deg'), getOrClear(dms.lon, 'min'), getOrClear(dms.lon, 'sec'));
         this.originalCoordinate = null;
       },
       deep: true
     },
     deg: {
       handler() {
-        this.coord.lat = dms2deg(parseFloat(this.deg.lat));
-        this.coord.lon = dms2deg(parseFloat(this.deg.lon));
+        this.coord.lat = dms2deg(getOrClear(this.deg, 'lat'));
+        this.coord.lon = dms2deg(getOrClear(this.deg, 'lon'));
         this.originalCoordinate = null;
       },
       deep: true
     },
     lv95: {
       handler() {
-        [this.coord.lat, this.coord.lon] = lv952wgs(parseFloat(this.lv95.N), parseFloat(this.lv95.E));
+        [this.coord.lat, this.coord.lon] = lv952wgs(getOrClear(this.lv95, 'N'), getOrClear(this.lv95, 'E'));
         this.originalCoordinate = {
-          lat: parseFloat(this.lv95.N),
-          lon: parseFloat(this.lv95.E),
+          lat: getOrClear(this.lv95, 'N'),
+          lon: getOrClear(this.lv95, 'E'),
           system: System.LV95
         };
       },
