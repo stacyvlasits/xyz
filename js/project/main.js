@@ -8,7 +8,6 @@ import ProjectTools from './ProjectTools.vue';
 import css from '../../public/index.css';
 
 
-let comp;
 let map, marker, boundsRect;
 
 const bern = { lat: 46.951082773, lon: 7.438632421, system: System.WGS84 };
@@ -20,8 +19,8 @@ function clone(obj) {
   return Object.assign({}, obj);
 }
 
-console.log('here');
 let displayCoord, gCoord;
+let firstTime = true;
 const app = Vue.createApp({
   components: {
     'coords-form': CoordsForm,
@@ -40,21 +39,30 @@ const app = Vue.createApp({
       pri_northing: 0
     }
   },
-  created() {
-    console.log(`created:`, this.coordinate);
-    comp = this;
-    window.comp = comp;
-  },
   methods: {
     onCoordChanged(ev) {
       //console.log('project/main.js#onCoordChanged', ev.lat, ev.lon);
       displayCoord = vm.$refs.coords_form.getCoord();
-      gCoord = {lat: displayCoord.lat, lng: displayCoord.lon};
       this.pri_coordinate.lat = ev.lat;
       this.pri_coordinate.lon = ev.lon;
+      if (displayCoord.originalCoordinate) {
+        this.pri_coordinate.originalCoordinate = displayCoord.originalCoordinate;
+      }
+      gCoord = {lat: displayCoord.lat, lng: displayCoord.lon};
       centerMap(gCoord.lat, gCoord.lng);
+      //if (firstTime) {
+        this.min.lat = ev.lat;
+        this.min.lon = ev.lon;
+        this.max.lat = ev.lat;
+        this.max.lon = ev.lon;
+        this.pri_min.lat = ev.lat;
+        this.pri_min.lon = ev.lon;
+        this.pri_max.lat = ev.lat;
+        this.pri_max.lon = ev.lon;
+    //}
     },
     onBounds(ev) {
+      //firstTime = false;
       //console.log('project/main.js#onBounds', ev);
       this.pri_min.lat = ev.min.lat;
       this.pri_min.lon = ev.min.lon;

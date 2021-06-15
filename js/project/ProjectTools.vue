@@ -14,7 +14,7 @@ Visit: <a target="_new" v-bind:href="servePath + '/extract#lat=' + coordinate.la
 </template>
 <script>
 import {ref} from 'vue';
-import {deg2dms} from '../coords/coords.js';
+import {deg2dms,wgs2lv95} from '../coords/coords.js';
 
 
 let dlUrl = null;
@@ -77,13 +77,20 @@ export default {
     validateInput() {
       const lat = deg2dms(this.coordinate.lat);
       const lon = deg2dms(this.coordinate.lon);
+      let N, E;
+      if (this.coordinate.originalCoordinate) {
+        const oc = this.coordinate.originalCoordinate;
+        [N, E] = [oc.lat, oc.lon];
+      } else {
+        [N, E] = wgs2lv95(this.coordinate.lat, this.coordinate.lon);
+      }
       const fileContent = `<?xml version="1.0" encoding="UTF-8"?>
 <ProjectLocation>
   <Version val="1"/>
   <LatitudeCoord deg="${lat.deg}" min="${lat.min}" sec="${lat.sec.toFixed(5)}"/>
-  <LatitudeNorth val="${this.coordinate.N}"/>
+  <LatitudeNorth val="${N}"/>
   <LongitudeCoord deg="${lon.deg}" min="${lon.min}" sec="${lon.sec.toFixed(5)}"/>
-  <LongitudeEast val="${this.coordinate.E}"/>
+  <LongitudeEast val="${E}"/>
   <LongLatUnit val="11"/>
   <TimeZoneHour val="1"/>
   <TimeZoneMinute val="0"/>

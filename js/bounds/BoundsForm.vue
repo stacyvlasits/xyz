@@ -20,6 +20,9 @@ export default {
   components: {
     'coords-form': CoordsForm
   },
+  created() {
+    console.log(`created, min:`, this.min);
+  },
   data() {
     return {
       bounds: {

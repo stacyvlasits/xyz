@@ -2,9 +2,9 @@
   <div class="coords-forms">
     <span style="width: 50pt">System:</span>
     <select name="input_format" v-on:change="onSelect($event.target.value)">
+      <option v-bind:value="types.LV95">LV95</option>
       <option v-bind:value="types.WGS84_DMS">Deg°/Min'/Sec"</option>
       <option v-bind:value="types.WGS84_DEG">Deg°</option>
-      <option v-bind:value="types.LV95">LV95</option>
     </select>
     <form name="coords_dms" v-show="show == types.WGS84_DMS" class="coord-form">
       <table>
@@ -111,11 +111,14 @@ export default {
         WGS84_DEG: System.WGS84 + '-deg',
         LV95: System.LV95
       },
-      show: System.WGS84 + '-dms', // can't use this.types
+      show: System.LV95 //System.WGS84 + '-dms', // can't use this.types
     }
   },
   methods: {
     getCoord() {
+      if (this.originalCoordinate) {
+        this.coord.originalCoordinate = this.originalCoordinate;
+      }
       return this.coord;
     },
     onSelect(value) {
@@ -174,8 +177,8 @@ export default {
       handler() {
         [this.coord.lat, this.coord.lon] = lv952wgs(parseFloat(this.lv95.N), parseFloat(this.lv95.E));
         this.originalCoordinate = {
-          lat: this.lv95.N,
-          lon: this.lv95.E,
+          lat: parseFloat(this.lv95.N),
+          lon: parseFloat(this.lv95.E),
           system: System.LV95
         };
       },
