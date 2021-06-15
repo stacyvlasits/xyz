@@ -8,6 +8,6 @@ module.exports = {
   outputDir: 'docs',
   runtimeCompiler: true,
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/xyz/'
+    ? '/xyz'
     : '/'
 };

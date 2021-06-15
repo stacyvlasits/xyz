@@ -11,7 +11,7 @@ import View from './View.js';
 import XYZObject from './XYZObject.js';
 
 // TODO get rid of this
-import {lv952wgs, wgs2lv95} from '../coords/coords.js';
+import {lv952wgs, wgs2lv95, System} from '../coords/coords.js';
 
 // TODO(https://github.com/buildrs/xyz/issues/1): CSS loading is weird.
 import css from '../../public/index.css';
@@ -34,16 +34,19 @@ const app = Vue.createApp({
       coordinate: {
         lat: Permalink.lat,
         lon: Permalink.lon,
+        system: System.WGS84,
         N: Permalink.lat, // todo: convert
         E: Permalink.lon,
       },
       min: {
         lat: Permalink.min_lat,
-        lon: Permalink.min_lon
+        lon: Permalink.min_lon,
+        system: System.WGS84
       },
       max: {
         lat: Permalink.max_lat,
-        lon: Permalink.max_lon
+        lon: Permalink.max_lon,
+        system: System.WGS84
       }
     };
     //console.log('extract/index.js#data:', d);

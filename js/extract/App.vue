@@ -9,7 +9,6 @@
 <script>
   import CoordsForm from '../coords/CoordsForm.vue';
   import BoundsForm from '../bounds/BoundsForm.vue';
-  import {lv952wgs, wgs2lv95} from '../coords/coords.js';
 
 
   export default {
@@ -23,30 +22,18 @@
       BoundsForm
     },
     methods: {
-      setLatLon(lat, lon) {
-        //console.log('App.vue#setLatLon', lat, lon);
-        this.coordinate.lat = lat;
-        this.coordinate.lon = lon;
-        [this.coordinate.N, this.coordinate.E] = wgs2lv95(lat, lon)
-      },
-      setLv95(N, E) {
-        //console.log('App.vue#setLv95', N, E);
-        this.coordinate.N = N;
-        this.coordinate.E = E;
-        [this.coordinate.lat, this.coordinate.lon] = lv952wgs(N, E);
-      },
       onBounds(arg) {
-        //console.log('extract/App.vue#onBounds: ', arg.min.wgs.lat, arg.min.wgs.lon, arg.max.wgs.lat, arg.max.wgs.lon, );
+        //console.log('extract/App.vue#onBounds: ', arg.min.lat, arg.min.lon, arg.max.lat, arg.max.lon);
         this.bounds = arg;
-        this.min.lat = arg.min.wgs.lat;
-        this.min.lon = arg.min.wgs.lon;
-        this.max.lat = arg.max.wgs.lat;
-        this.max.lon = arg.max.wgs.lon;
+        this.min.lat = arg.min.lat;
+        this.min.lon = arg.min.lon;
+        this.max.lat = arg.max.lat;
+        this.max.lon = arg.max.lon;
       },
       onLVCoord(ev) {
         console.log('extract/App.vue#onLVCoord: ', ev);
         const c = this.coordinate;
-        [c.lat, c.lon, c.N, c.E] = [ev.wgs.lat, ev.wgs.lon, ev.lv95.N, ev.lv95.E];
+        [c.lat, c.lon] = [ev.lat, ev.lon];
         //console.log('App.vue#onLVCoord: ', c);
       }
     },

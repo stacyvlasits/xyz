@@ -25,7 +25,7 @@
       </form>-->
       <div id="app">
         <h2>Project Reference Coordinate</h2>
-        <coords-form :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
+        <coords-form ref="coords_form" :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
         <p>Altitude: <input v-model.number="pri_altitude" type="number" step="any" class="three-digit"> meters
         <p>Northing: <input v-model.number="pri_northing" type="number" step="any" class="ten-digit">°
 

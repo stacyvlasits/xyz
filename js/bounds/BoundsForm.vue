@@ -8,6 +8,8 @@
 </template>
 <script>
 import CoordsForm from '../coords/CoordsForm.vue';
+import {wgs2lv95} from '../coords/coords.js';
+import {assertInRange} from '@pablo-mayrgundter/testing.js/testing.js';
 
 
 export default {
@@ -22,55 +24,39 @@ export default {
     return {
       bounds: {
         min: {
-          wgs: {
-            lat: null,
-            lon: null
-          },
-          lv95: {
-            N: null,
-            E: null
-          }
+          lat: null,
+          lon: null
         },
         max: {
-          wgs: {
-            lat: null,
-            lon: null
-          },
-          lv95: {
-            N: null,
-            E: null
-          }
+          lat: null,
+          lon: null
         },
       }
     }
   },
   methods: {
     onMin(ev) {
-      if (this.bounds.max.wgs.lat == null) {
-        this.bounds.max.wgs.lat = this.max.lat;
-        this.bounds.max.wgs.lon = this.max.lon;
-        this.bounds.max.lv95.N = this.max.N;
-        this.bounds.max.lv95.E = this.max.E;
+      assertInRange(ev.lat, -360, 360);
+      assertInRange(ev.lon, -360, 360);
+      if (this.bounds.max.lat == null) {
+        this.bounds.max.lat = this.max.lat;
+        this.bounds.max.lon = this.max.lon;
       }
-      this.bounds.min.wgs.lat = ev.wgs.lat;
-      this.bounds.min.wgs.lon = ev.wgs.lon;
-      this.bounds.min.lv95.N = ev.lv95.N;
-      this.bounds.min.lv95.E = ev.lv95.E;
-      //console.log(`BoundsForm#onMin: ${this.bounds.min.wgs.lat}`, this.bounds);
+      this.bounds.min.lat = ev.lat;
+      this.bounds.min.lon = ev.lon;
+      //console.log(`bounds/BoundsForm.vue#onMin: `, ev, this.bounds);
       this.$emit('bounds-changed', this.bounds);
     },
     onMax(ev) {
-      if (this.bounds.min.wgs.lat == null) {
-        this.bounds.min.wgs.lat = this.min.lat;
-        this.bounds.min.wgs.lon = this.min.lon;
-        this.bounds.min.lv95.N = this.min.N;
-        this.bounds.min.lv95.E = this.min.E;
+      assertInRange(ev.lat, -360, 360);
+      assertInRange(ev.lon, -360, 360);
+      if (this.bounds.min.lat == null) {
+        this.bounds.min.lat = this.min.lat;
+        this.bounds.min.lon = this.min.lon;
       }
-      this.bounds.max.wgs.lat = ev.wgs.lat;
-      this.bounds.max.wgs.lon = ev.wgs.lon;
-      this.bounds.max.lv95.N = ev.lv95.N;
-      this.bounds.max.lv95.E = ev.lv95.E;
-      console.log('BoundsForm#onMax: sending message', this.bounds);
+      this.bounds.max.lat = ev.lat;
+      this.bounds.max.lon = ev.lon;
+      //console.log('bounds/BoundsForm.vue#onMax: ', ev, this.bounds);
       this.$emit('bounds-changed', this.bounds);
     },
   },

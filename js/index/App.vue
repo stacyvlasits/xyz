@@ -25,22 +25,6 @@
       'coords-form': CoordsForm
     },
     methods: {
-      setLatLon(lat, lon) {
-        //console.log('App.vue#setLatLon', lat, lon);
-        this.coordinate.lat = lat;
-        this.coordinate.lon = lon;
-        [this.coordinate.N, this.coordinate.E] = wgs2lv95(lat, lon)
-      },
-      setLv95(N, E) {
-        //console.log('App.vue#setLv95', N, E);
-        this.coordinate.N = N;
-        this.coordinate.E = E;
-        [this.coordinate.lat, this.coordinate.lon] = lv952wgs(N, E);
-      },
-      setRadius(r) {
-        //console.log('App.vue#setRadius', r);
-        this.radius = r;
-      },
       onLVCoord(ev) {
         //console.log('App.vue#onLVCoord: ', ev);
         const c = this.coordinate;

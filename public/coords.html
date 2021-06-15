@@ -32,7 +32,7 @@
         use <a href="https://www.swisstopo.admin.ch/en/maps-data-online/calculation-services/navref.html"
                target=new>NAVREF</a>, maintained by the Topography Office.</p>
       <div id="app">
-        <coords-form :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
+        <coords-form ref="coords_form" :coordinate="coordinate" @coord-changed="onCoordChanged"></coords-form>
       </div>
     </div>
   <script

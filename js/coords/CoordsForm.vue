@@ -2,11 +2,11 @@
   <div class="coords-forms">
     <span style="width: 50pt">System:</span>
     <select name="input_format" v-on:change="onSelect($event.target.value)">
-      <option value="dms">Deg°/Min'/Sec"</option>
-      <option value="deg">Deg°</option>
-      <option value="lv95">LV95</option>
+      <option v-bind:value="types.WGS84_DMS">Deg°/Min'/Sec"</option>
+      <option v-bind:value="types.WGS84_DEG">Deg°</option>
+      <option v-bind:value="types.LV95">LV95</option>
     </select>
-    <form name="coords_dms" v-show="dms.show" class="coord-form">
+    <form name="coords_dms" v-show="show == types.WGS84_DMS" class="coord-form">
       <table>
         <tr>
           <td>Latitude:</td>
@@ -26,7 +26,7 @@
         </tr>
       </table>
     </form>
-    <form name="coords_degrees" v-show="deg.show" class="coord-form">
+    <form name="coords_degrees" v-show="show == types.WGS84_DEG" class="coord-form">
       <table>
         <tr>
           <td>Latitude:</td>
@@ -42,7 +42,7 @@
         </tr>
       </table>
     </form>
-    <form name="coords_lv95" v-show="lv95.show" class="coord-form">
+    <form name="coords_lv95" v-show="show == types.LV95" class="coord-form">
       <table>
         <tr>
           <td>Latitude:</td>
@@ -57,86 +57,97 @@
   </div>
 </template>
 <script>
-import {dms2deg, wgs2lv95, lv952wgs, deg2dms} from './coords.js';
+import {dms2deg, wgs2lv95, lv952wgs, deg2dms, System} from './coords.js';
+import {assertDefined,assertEquals} from '@pablo-mayrgundter/testing.js/testing.js';
+
 
 export default {
   props: {
     coordinate: Object
   },
   data() {
-    const [N, E] = wgs2lv95(this.coordinate.lat, this.coordinate.lon);
+    this.originalCoordinate = this.coordinate;
+
+    let lat, lon, N, E, system, originalCoordinate;
+    if (this.coordinate.system == System.WGS84) {
+      [lat, lon, system] = [this.coordinate.lat, this.coordinate.lon, System.WGS84];
+      [N, E] = wgs2lv95(lat, lon);
+    } else if (this.coordinate.system == System.LV95) {
+      [lat, lon] = lv952wgs(this.coordinate.lat, this.coordinate.lon);
+      system = System.WGS84;
+      [N, E] = [this.coordinate.lat, this.coordinate.lon];
+      this.originalCoordinate = this.coordinate;
+      this.originalCoordinate.system = System.LV95;
+    } else {
+      assertEquals(System.WGS84, this.coordinate.system, 'Unknown coordinate system: ', this.coordinate.system);
+    }
+
+    if (lat > 360 || lon > 360 || lat < -360 || lon < -360) {
+      throw new Error('Coordinate not reified to WGS range [-360,360].');
+    }
+
+    //console.log([N, E]);
     return {
+      // Main saved coordinate.
+      coord: {
+        lat: lat,
+        lon: lon
+      },
+      // The rest is internal state for component displays.
       dms: {
-        show: true,
-        lat: deg2dms(this.coordinate.lat),
-        lon: deg2dms(this.coordinate.lon)
+        lat: deg2dms(lat),
+        lon: deg2dms(lon),
       },
       deg: {
-        show: false,
-        lat: this.coordinate.lat,
-        lon: this.coordinate.lon
+        lat: lat,
+        lon: lon,
       },
       lv95: {
-        show: false,
         N: N,
         E: E,
-        nMin: Number.MIN_VALUE,
-        nMax: Number.MAX_VALUE,
-        eMin: Number.MIN_VALUE,
-        eMax: Number.MAX_VALUE,
       },
-      coord: {
-        lat: this.coordinate.lat,
-        lon: this.coordinate.lon,
-        latMin: Number.MIN_VALUE,
-        latMax: Number.MAX_VALUE,
-        lonMin: Number.MIN_VALUE,
-        lonMax: Number.MAX_VALUE
-      }
+      types: {
+        WGS84_DMS: System.WGS84 + '-dms',
+        WGS84_DEG: System.WGS84 + '-deg',
+        LV95: System.LV95
+      },
+      show: System.WGS84 + '-dms', // can't use this.types
     }
   },
   methods: {
-    setLatLon(lat, lon) {
-      this.deg.lat = lat;
-      this.deg.lon = lon;
-      this.dms.lat = deg2dms(lat);
-      this.dms.lon = deg2dms(lon);
-    },
-    setLv95(N, E) {
-      this.lv95.N = N;
-      this.lv95.E = E;
+    getCoord() {
+      return this.coord;
     },
     onSelect(value) {
-      this.dms.show = false;
-      this.deg.show = false;
-      this.lv95.show = false;
-      const lat = this.coord.lat, lon = this.coord.lon;
       switch(value) {
-      case 'dms':
-        this.dms.lat = deg2dms(lat);
-        this.dms.lon = deg2dms(lon);
+      case this.types.WGS84_DMS:
+        [this.dms.lat, this.dms.lon] = [deg2dms(this.coord.lat), deg2dms(this.coord.lon)];
         break;
-      case 'deg': [this.deg.lat, this.deg.lon] = [lat, lon]; break;
-      case 'lv95': [this.lv95.N, this.lv95.E] = wgs2lv95(lat, lon); break;
+      case this.types.WGS84_DEG:
+        [this.deg.lat, this.deg.lon] = [this.coord.lat, this.coord.lon];
+        break;
+      case this.types.LV95:
+        if (this.originalCoordinate && this.originalCoordinate.system == System.LV95) {
+          [this.lv95.N, this.lv95.E] = [this.originalCoordinate.lat, this.originalCoordinate.lon];
+        } else {
+          [this.lv95.N, this.lv95.E] = wgs2lv95(this.coord.lat, this.coord.lon);
+        }
+        break;
+      default: throw new Error('Invalid system in switch: ' + value);
       }
-      this[value].show = true;
+      this.show = value;
     }
   },
   emits: ['coord-changed'],
   watch: {
-    coordinate: {
-      handler() {
-        //console.log('CoordsForm#coordiate handler: ', this.coordinate);
-        this.setLatLon(this.coordinate.lat, this.coordinate.lon);
-      },
-      deep: true
-    },
     coord: {
       handler() {
-        const c = this.coord;
-        const lv = wgs2lv95(c.lat, c.lon);
-        const changeEvent = {wgs:{lat: c.lat, lon: c.lon}, lv95:{N:lv[0], E:lv[1]}};
-        //console.log('CoordsForm: coord changed: ', changeEvent);
+        const changeEvent = {
+          lat: this.coord.lat,
+          lon: this.coord.lon,
+          system: System.WGS84,
+          originalCoordinate: this.originalCoordinate
+        };
         this.$root.$emit('coord-changed', changeEvent);
         this.$emit('coord-changed', changeEvent);
       },
@@ -147,6 +158,7 @@ export default {
         const dms = this.dms;
         this.coord.lat = dms2deg(parseFloat(dms.lat.deg), parseFloat(dms.lat.min), parseFloat(dms.lat.sec));
         this.coord.lon = dms2deg(parseFloat(dms.lon.deg), parseFloat(dms.lon.min), parseFloat(dms.lon.sec));
+        this.originalCoordinate = null;
       },
       deep: true
     },
@@ -154,12 +166,18 @@ export default {
       handler() {
         this.coord.lat = dms2deg(parseFloat(this.deg.lat));
         this.coord.lon = dms2deg(parseFloat(this.deg.lon));
+        this.originalCoordinate = null;
       },
       deep: true
     },
     lv95: {
       handler() {
         [this.coord.lat, this.coord.lon] = lv952wgs(parseFloat(this.lv95.N), parseFloat(this.lv95.E));
+        this.originalCoordinate = {
+          lat: this.lv95.N,
+          lon: this.lv95.E,
+          system: System.LV95
+        };
       },
       deep: true
     },

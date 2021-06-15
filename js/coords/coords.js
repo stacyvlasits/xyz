@@ -16,6 +16,12 @@ const DEGREE = 1 / 360;
 const MINUTE = 1 / 360 / 60;
 const SECOND = 1 / 360 / 3600;
 
+export const System = Object.freeze({
+  WGS84: 'wgs84-system',
+  LV95: 'lv95-system'
+});
+
+
 export function dms2deg(deg, min = 0, sec = 0) {
   return deg + min / 60 + sec / 3600;
 }
