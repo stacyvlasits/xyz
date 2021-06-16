@@ -71,7 +71,7 @@ function toPointsShape(xyzArr, sourceBounds) {
   const groundMaterial = new THREE.PointsMaterial({
     color: 0x008800,
     sizeAttenuation: false,
-    size: 10
+    size: 2
   });
   const groundPoints = new THREE.Points(geom, groundMaterial);
   groundPoints.sortParticles = true;
