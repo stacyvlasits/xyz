@@ -72,14 +72,14 @@ const app = Vue.createApp({
       const min = event.min, max = event.max;
       const lv95min = wgs2lv95(min.lat, min.lon);
       const lv95max = wgs2lv95(max.lat, max.lon);
-      console.log(`coord-bounds-change: `, lv95min, lv95max);
+      //console.log(`coord-bounds-change: `, lv95min, lv95max);
       const zoom = {
         Xmin: lv95min[1],
         Xmax: lv95max[1],
         Ymin: lv95min[0],
         Ymax: lv95max[0],
       };
-      console.log('extract/index.js:calling zoom: ', zoom);
+      //console.log('extract/index.js:calling zoom: ', zoom);
       view.focus(zoom);
       sc.processBounds(zoom, document.getElementById('dlbtn'));
     },
