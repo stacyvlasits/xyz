@@ -2,12 +2,18 @@
 
 See [Demo XYZ extract tool](https://buildrs.github.io/xyz/)
 
-## Dev (demo)
+## Install dev
+This requires you have a github account and personal access tokens.  See https://stackoverflow.com/questions/58919401/installing-packages-from-github-npm-registry-auth-error-401
+```
+> npm i
+```
+
+## Run dev locally
 ```
 > npm run serve
 ```
 
-## Build (demo)
+## Build production
 ```
 # First, increase the version number in package.json to the
 # next in sequence from the current NPM version.
