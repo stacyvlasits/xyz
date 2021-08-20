@@ -7,7 +7,6 @@ export default class FileLoaderControl {
     this.loadCb = loadCb;
   }
 
-
   onFileSelected() {
     const file = this.fileLoaderElt.files[0];
     const reader = new FileReader();
@@ -20,3 +19,4 @@ export default class FileLoaderControl {
     reader.readAsDataURL(file);
   }
 }
+

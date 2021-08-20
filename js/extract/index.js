@@ -3,6 +3,7 @@ import * as Diurnal from '@pablo-mayrgundter/diurnal.js';
 import Permalink from '../permalink.js';
 import Fullscreen from '@pablo-mayrgundter/fullscreen.js';
 import {XYZLoader} from 'three/examples/jsm/loaders/XYZLoader.js';
+import {FileLoader} from 'three/build/three.module';
 
 import App from './App.vue';
 import FileLoaderControl from './FileLoaderControl.js';
@@ -115,16 +116,34 @@ const display = geometry => {
 
 
 const selectElt = document.querySelector("select[name='sources']");
+const loader = new FileLoader();
+
 selectElt.addEventListener('change', () => {
-    new XYZLoader().load(selectElt.value, display);
+  loader.load(selectElt.value, (text) =>{
+    const trimmed = trimToXYZData(text);
+    display(new XYZLoader().parse(trimmed));
+  });
 });
-new XYZLoader().load(selectElt.value, display);
+
+loader.load(selectElt.value, (text) =>{
+  const trimmed = trimToXYZData(text);
+  display(new XYZLoader().parse(trimmed));
+});
 
 const fileLoaderElt = document.getElementById('fileLoader');
 const fileCtrl = new FileLoaderControl(fileLoaderElt, loadedXyz => {
-    display(new XYZLoader().parse(loadedXyz));
+    const trimmed = trimToXYZData(loadedXyz);
+    display(new XYZLoader().parse(trimmed));
   });
 
+function trimToXYZData(text){
+  // match lines that start with three integers or floats separated by whitespace
+  const validLineRegex = /(\d+\.?\d*)\s+(\d+\.?\d*)\s+(\d+\.?\d*).*/g; 
+  const indexOfFirstValidLine = text.search(validLineRegex);
+  const trimmed = text.substring(indexOfFirstValidLine);
+  console.log('trimmed',trimmed);
+  return trimmed;
+}
 
 function handleHash() {
   let hash = location.hash.substr(1);
