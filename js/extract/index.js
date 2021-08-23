@@ -3,7 +3,6 @@ import * as Diurnal from '@pablo-mayrgundter/diurnal.js';
 import Permalink from '../permalink.js';
 import Fullscreen from '@pablo-mayrgundter/fullscreen.js';
 import {XYZLoader} from 'three/examples/jsm/loaders/XYZLoader.js';
-import {FileLoader} from 'three/build/three.module';
 
 import App from './App.vue';
 import FileLoaderControl from './FileLoaderControl.js';
@@ -36,8 +35,8 @@ const app = Vue.createApp({
         lat: Permalink.lat,
         lon: Permalink.lon,
         system: System.WGS84,
-        N: Permalink.lat, // todo: convert
-        E: Permalink.lon,
+        N: 0, //placeholder replaced during 'created' 
+        E: 0, //placeholder replaced during 'created'
       },
       min: {
         lat: Permalink.min_lat,
@@ -57,6 +56,11 @@ const app = Vue.createApp({
     //console.log(`created: ${this.coordinate}`);
     comp = this;
     window.comp = comp;
+
+    // converts
+    const lv95center = wgs2lv95(Permalink.lat, Permalink.lon);
+    this.coordinate.N = lv95center[0];
+    this.coordinate.E = lv95center[1];
   },
   methods: {
     setCoord(N, E, R) {
@@ -101,10 +105,12 @@ const display = geometry => {
   const obj = new XYZObject(geometry);
   view.displayXYZObject(obj);
   const bounds = obj.shape.sourceBounds;
-  sc = new SelectionControl(obj, obj.shape.sourceBounds, obj.shape.viewBounds, zoom => {
-    //view.focus(zoom);
-  });
   if (comp) {
+    const centerPointCoordinates = comp.coordinate;
+    sc = new SelectionControl(obj, centerPointCoordinates, obj.shape.sourceBounds, obj.shape.viewBounds, zoom => {
+      //view.focus(zoom);
+    });
+    
     const N = bounds.min.y + (bounds.max.y - bounds.min.y) / 2;
     const E = bounds.min.x + (bounds.max.x - bounds.min.x) / 2;
     //console.log(comp, bounds, N, E);
@@ -116,28 +122,21 @@ const display = geometry => {
 
 
 const selectElt = document.querySelector("select[name='sources']");
-const loader = new FileLoader();
-
 selectElt.addEventListener('change', () => {
-  loader.load(selectElt.value, (text) =>{
-    const trimmed = trimToXYZData(text);
-    display(new XYZLoader().parse(trimmed));
-  });
+  const trimmed = trimFileStart(selectElt.value);
+  new XYZLoader().load(trimmed, display);
 });
-
-loader.load(selectElt.value, (text) =>{
-  const trimmed = trimToXYZData(text);
-  display(new XYZLoader().parse(trimmed));
-});
+const trimmed = trimFileStart(selectElt.value);
+new XYZLoader().load(trimmed, display);
 
 const fileLoaderElt = document.getElementById('fileLoader');
 const fileCtrl = new FileLoaderControl(fileLoaderElt, loadedXyz => {
-    const trimmed = trimToXYZData(loadedXyz);
+    const trimmed = trimFileStart(loadedXyz);
     display(new XYZLoader().parse(trimmed));
   });
 
-function trimToXYZData(text){
-  // match lines that start with three integers or floats separated by whitespace
+function trimFileStart(text){
+  // valid lines start with three integers or floats separated by whitespace
   const validLineRegex = /(\d+\.?\d*)\s+(\d+\.?\d*)\s+(\d+\.?\d*).*/g; 
   const indexOfFirstValidLine = text.search(validLineRegex);
   const trimmed = text.substring(indexOfFirstValidLine);

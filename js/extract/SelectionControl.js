@@ -2,8 +2,9 @@
  * Setup the input sliders and text fields with min/max bounds.
  */
 export default class SelectionControl {
-  constructor(xyzObject, sourceBounds, viewBounds, onZoomChangeCb) {
+  constructor(xyzObject, centerPointCoordinate, sourceBounds, viewBounds, onZoomChangeCb) {
     this.xyzObject = xyzObject;
+    this.centerPointCoordinate = centerPointCoordinate;
     this.onZoomChangeCb = onZoomChangeCb;
     const minX = sourceBounds.min.x;
     const minY = sourceBounds.min.y;
@@ -75,7 +76,9 @@ export default class SelectionControl {
   activateDownloadButton(button, bounds) {
     button.onclick = () => {
       this.processBounds(bounds, button);
-      const fileContent = this.xyzObject.extractSectionAsXYZ(this.userSelection);
+      let fileContent = this.xyzObject.extractSectionAsXYZ(this.userSelection);
+
+      fileContent = recenterToCenterPointCoordinate(fileContent, this.centerPointCoordinate);
       const data = new Blob([fileContent], {type: 'text/plain'});
       const url = window.URL.createObjectURL(data);
       button.href = url;
@@ -90,6 +93,41 @@ export default class SelectionControl {
   }
 }
 
+function recenterToCenterPointCoordinate(xyzData, centerPointCoordinate){
+  const lines = xyzData.split('\n');
+
+  const recenteredLines = [];
+  
+  console.log("centerPointCoordinate", centerPointCoordinate);
+  
+  for ( let line of lines ) {
+    line = line.trim();
+    if (line.charAt( 0 ) === '#' ){
+      //retain comments
+      recenteredLines.push(line); 
+    } else {
+    
+      let lineValues = line.split( /\s+/ );
+      let x = lineValues[0];
+      let y = lineValues[1];
+
+      if (isNaN(x) || isNaN(y)) {
+        console.log("Unexpected data: not a number", x, y);
+      } else {
+        lineValues[0] = x - centerPointCoordinate.E;
+        lineValues[1] = y - centerPointCoordinate.N;
+      }
+      console.log("x, y, lineValues[0], lineValues[1], centerPointCoordinate.E, centerPointCoordinate.N", x, y, lineValues[0], lineValues[1], centerPointCoordinate.E, centerPointCoordinate.N);
+
+      const newLine = lineValues.join(' ');
+
+      recenteredLines.push(newLine);
+    }
+
+  }
+
+  return recenteredLines.join('\n');
+}
 
 function clip(min, max, val) {
   return Math.min(Math.max(val, min), max);
