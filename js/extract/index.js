@@ -7,6 +7,7 @@ import {XYZLoader} from 'three/examples/jsm/loaders/XYZLoader.js';
 import App from './App.vue';
 import FileLoaderControl from './FileLoaderControl.js';
 import SelectionControl from './SelectionControl.js';
+import Utils from './Utils.js';
 import View from './View.js';
 import XYZObject from './XYZObject.js';
 
@@ -121,28 +122,22 @@ const display = geometry => {
 };
 
 
+const theUtils = new Utils();
+
 const selectElt = document.querySelector("select[name='sources']");
 selectElt.addEventListener('change', () => {
-  const trimmed = trimFileStart(selectElt.value);
+  const trimmed = theUtils.trimXYZFileStart(selectElt.value);
   new XYZLoader().load(trimmed, display);
 });
-const trimmed = trimFileStart(selectElt.value);
+const trimmed = theUtils.trimXYZFileStart(selectElt.value);
 new XYZLoader().load(trimmed, display);
 
 const fileLoaderElt = document.getElementById('fileLoader');
 const fileCtrl = new FileLoaderControl(fileLoaderElt, loadedXyz => {
-    const trimmed = trimFileStart(loadedXyz);
+    const trimmed = theUtils.trimXYZFileStart(loadedXyz);
     display(new XYZLoader().parse(trimmed));
   });
 
-function trimFileStart(text){
-  // valid lines start with three integers or floats separated by whitespace
-  const validLineRegex = /(\d+\.?\d*)\s+(\d+\.?\d*)\s+(\d+\.?\d*).*/g; 
-  const indexOfFirstValidLine = text.search(validLineRegex);
-  const trimmed = text.substring(indexOfFirstValidLine);
-  console.log('trimmed',trimmed);
-  return trimmed;
-}
 
 function handleHash() {
   let hash = location.hash.substr(1);
